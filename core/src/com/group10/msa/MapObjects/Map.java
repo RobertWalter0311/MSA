@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Map {
 
-    public Map[][] mapObjects;
+    public MapObject[][] mapObjects;
 
     private MapObject Tower;
     private MapObject Target;
