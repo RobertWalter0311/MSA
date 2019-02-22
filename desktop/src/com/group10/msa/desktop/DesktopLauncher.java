@@ -7,7 +7,7 @@ import com.group10.msa.MAS;
 public class DesktopLauncher {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-		cfg.title = "hello-world";
+		cfg.title = "MASS";
 		cfg.width = 800;
 		cfg.height = 480;
 

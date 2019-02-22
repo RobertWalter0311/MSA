@@ -23,6 +23,8 @@ public class GameScreen implements Screen{
 
         //load in textures
         towerImg = new Texture(Gdx.files.internal("badlogic.jpg"));
+
+
         //create Camera
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);
@@ -44,12 +46,17 @@ public class GameScreen implements Screen{
         game.batch.setProjectionMatrix(camera.combined);
 
 
-        Gdx.gl.glClearColor(0, 2, 2, 1);
+        Gdx.gl.glClearColor(2, 2, 2, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		game.batch.begin();
 		game.batch.draw(towerImg,0,0);
 		game.batch.end();
+
+		if (Gdx.input.isTouched()) {
+			game.setScreen(new MenuScreen(game));
+			dispose();
+		}
 	}
 
     @Override
