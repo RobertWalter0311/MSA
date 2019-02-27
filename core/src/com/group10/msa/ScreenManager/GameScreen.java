@@ -1,6 +1,7 @@
 package com.group10.msa.ScreenManager;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.MathUtils;
 import com.group10.msa.MAS;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 public class GameScreen implements Screen{
@@ -33,6 +35,7 @@ public class GameScreen implements Screen{
 	private Texture texture;
 	private BitmapFont font;
 	private SpriteBatch batch;
+    private float rotationSpeed;
 
 
     public GameScreen(final MAS game) {
@@ -43,7 +46,8 @@ public class GameScreen implements Screen{
 
 
         //create Camera
-        camera = new OrthographicCamera();
+        rotationSpeed = 0.5f;
+        camera = new OrthographicCamera(800,480);
         camera.setToOrtho(false, 800, 480);
         camera.update();
         //creates new batch, we could also use the static public batch from menuscreen
@@ -100,7 +104,8 @@ public class GameScreen implements Screen{
 
 	@Override
 	public void render(float delta) {
-
+        //manipulate camera eg. zoom
+        handleInput();
         // tell the camera to update its matrices.
         camera.update();
 
@@ -119,6 +124,42 @@ public class GameScreen implements Screen{
 		renderer.render();
 
 	}
+    private void handleInput() {
+        //key ordering is botched for now
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            camera.zoom += 0.02;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.X)) {
+            camera.zoom -= 0.02;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            camera.translate(-3, 0, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            camera.translate(3, 0, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.Z)) {
+            camera.translate(0, -3, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            camera.translate(0, 3, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+            camera.rotate(-rotationSpeed, 0, 0, 1);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+            camera.rotate(rotationSpeed, 0, 0, 1);
+        }
+
+        camera.zoom = MathUtils.clamp(camera.zoom, 0.1f, 800 / camera.viewportWidth);
+
+        float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
+        float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
+
+      //  camera.position.x = MathUtils.clamp(camera.position.x, effectiveViewportWidth / 2f, 800 - effectiveViewportWidth);
+        // camera.position.y = MathUtils.clamp(camera.position.y, effectiveViewportHeight / 2f, 480 - effectiveViewportHeight);
+    }
+
 
     @Override
     public void show(){
@@ -130,6 +171,9 @@ public class GameScreen implements Screen{
 
     @Override
 	public void resize(int width, int height) {
+       camera.viewportWidth = 800;
+       camera.viewportHeight = 480;
+       camera.update();
 	}
 
 	@Override
