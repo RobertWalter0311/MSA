@@ -58,8 +58,8 @@ public class GameScreen implements Screen{
 			map = new TiledMap();
 			MapLayers layers = map.getLayers();
 			TiledMapTileLayer layer = new TiledMapTileLayer(800, 480, 10, 10);
-			for (int x = 0; x < 800; x++) {
-				for (int y = 0; y < 480; y++) {
+			for (int x = 0; x < 80; x++) {
+				for (int y = 0; y < 48; y++) {
 					Cell cell = new TiledMapTileLayer.Cell();
 					if( y % 2 == 0 && x % 2 == 0){
 						cell.setTile(new StaticTiledMapTile(t2));}
