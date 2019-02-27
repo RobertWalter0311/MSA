@@ -8,12 +8,14 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
@@ -32,17 +34,24 @@ public class GameScreen implements Screen{
 	private Texture tiles;
 	private Texture tiles2;
     private Texture wall;
+    private Texture agent;
 	private Texture texture;
 	private BitmapFont font;
 	private SpriteBatch batch;
     private float rotationSpeed;
+	private Sprite sprite;
+	private int[][] world;
 
 
     public GameScreen(final MAS game) {
         this.game = game;
 
         //load in textures
-        towerImg = new Texture(Gdx.files.internal("badlogic.jpg"));
+        tiles = new Texture(Gdx.files.internal("data/Grass.png"));
+        tiles2 = new Texture(Gdx.files.internal("data/Dirt.png"));
+        wall = new Texture(Gdx.files.internal("data/Wall.jpg"));
+        agent = new Texture(Gdx.files.internal("data/CropAgent.jpg"));
+
 
 
         //create Camera
@@ -55,11 +64,8 @@ public class GameScreen implements Screen{
 
 		{
 			//
-			tiles = new Texture(Gdx.files.internal("data/Grass.png"));
-			tiles2 = new Texture(Gdx.files.internal("data/Dirt.png"));
-            wall = new Texture(Gdx.files.internal("data/Wall.jpg"));
 
-			int[][] world = new int[80][48];
+			world = new int[80][48];
 			for(int i = 0; i < world.length; i++){
 			    for(int j = 0; j < world[0].length; j++){
 			        double rando =  Math.random();
@@ -76,7 +82,7 @@ public class GameScreen implements Screen{
 			MapLayers layers = map.getLayers();
 			TiledMapTileLayer layer = new TiledMapTileLayer(800, 480, 10, 10);
 			for (int x = 0; x < 80; x++) {
-				for (int y = 0; y < 48; y++) {
+				for (int y = 47; y >= 0; y--) {
 					Cell cell = new TiledMapTileLayer.Cell();
 					if(world[x][y] == 1){
 						cell.setTile(new StaticTiledMapTile(t2));}
@@ -90,6 +96,9 @@ public class GameScreen implements Screen{
 					}
 				}
 				layers.add(layer);
+            TextureRegion tagent = new TextureRegion(agent,10,10);
+            sprite = new Sprite(tagent);
+
 		}
 
 		renderer = new OrthogonalTiledMapRenderer(map);
@@ -97,7 +106,6 @@ public class GameScreen implements Screen{
 
 	@Override
 	public void dispose() {
-		towerImg.dispose();
 		batch.dispose();
 
 	}
@@ -120,10 +128,45 @@ public class GameScreen implements Screen{
 		}
 		Gdx.gl.glClearColor(2,2,2,1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 		renderer.setView(camera);
 		renderer.render();
 
-	}
+        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)&& sprite.getX() > 0){
+            if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+                sprite.translateX(-0.1f);
+            else
+                sprite.translateX(-10.0f);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)&& sprite.getX() < 790){
+            if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+                sprite.translateX(10f);
+            else
+                sprite.translateX(10.0f);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)&& sprite.getY() > 0){
+            if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+                sprite.translateY(-10f);
+            else
+                sprite.translateY(-10.0f);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.UP)&& sprite.getY() < 470){
+            if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+                sprite.translateY(10f);
+            else
+                sprite.translateY(10.0f);
+        }
+        batch.begin();
+        sprite.draw(batch);
+        batch.end();
+        int agentx = (int) sprite.getX()/10;
+        int agenty = (int) sprite.getY()/10;
+        System.out.println("agent is on tile x: " + (agentx) + " y: " + (agenty));
+        if(agentx < 80 && agenty < 48)
+            System.out.println("thus hes on tile " + world[agentx][agenty]);
+    }
+
+
     private void handleInput() {
         //key ordering is botched for now
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
