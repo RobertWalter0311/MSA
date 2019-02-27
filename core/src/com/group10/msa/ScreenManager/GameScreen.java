@@ -29,6 +29,7 @@ public class GameScreen implements Screen{
 	private AssetManager assetManager;
 	private Texture tiles;
 	private Texture tiles2;
+    private Texture wall;
 	private Texture texture;
 	private BitmapFont font;
 	private SpriteBatch batch;
@@ -52,17 +53,31 @@ public class GameScreen implements Screen{
 			//
 			tiles = new Texture(Gdx.files.internal("data/Grass.png"));
 			tiles2 = new Texture(Gdx.files.internal("data/Dirt.png"));
+            wall = new Texture(Gdx.files.internal("data/Wall.jpg"));
+
+			int[][] world = new int[80][48];
+			for(int i = 0; i < world.length; i++){
+			    for(int j = 0; j < world[0].length; j++){
+			        double rando =  Math.random();
+			        if(rando < 0.33) world[i][j] =1;
+			        else if (rando < 0.66) world[i][j] = 3;
+			        else world[i][j] = 2;
+                }
+            }
 
 			TextureRegion t1 = new TextureRegion(tiles, 10,10);
 			TextureRegion t2 = new TextureRegion(tiles2, 10,10);
+			TextureRegion twall = new TextureRegion(wall, 10,10);
 			map = new TiledMap();
 			MapLayers layers = map.getLayers();
 			TiledMapTileLayer layer = new TiledMapTileLayer(800, 480, 10, 10);
 			for (int x = 0; x < 80; x++) {
 				for (int y = 0; y < 48; y++) {
 					Cell cell = new TiledMapTileLayer.Cell();
-					if( y % 2 == 0 && x % 2 == 0){
+					if(world[x][y] == 1){
 						cell.setTile(new StaticTiledMapTile(t2));}
+						else if ( world[x][y] == 3)
+						    cell.setTile(new StaticTiledMapTile(twall));
 						else {
 							//System.out.println("im here fam");
 							cell.setTile(new StaticTiledMapTile(t1));
