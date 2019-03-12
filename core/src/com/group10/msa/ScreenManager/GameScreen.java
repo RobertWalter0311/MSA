@@ -20,7 +20,6 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 import com.group10.msa.MAS;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 public class GameScreen implements Screen{
 
 
@@ -97,8 +96,9 @@ public class GameScreen implements Screen{
 				}
 				layers.add(layer);
             TextureRegion tagent = new TextureRegion(agent,10,10);
-            sprite = new Sprite(tagent);
 
+            sprite = new Sprite(tagent);
+            //MapLayer ml= new MapLayer(sprite);
 		}
 
 		renderer = new OrthogonalTiledMapRenderer(map);
@@ -156,6 +156,8 @@ public class GameScreen implements Screen{
             else
                 sprite.translateY(10.0f);
         }
+
+        batch.setProjectionMatrix(camera.combined);
         batch.begin();
         sprite.draw(batch);
         batch.end();
