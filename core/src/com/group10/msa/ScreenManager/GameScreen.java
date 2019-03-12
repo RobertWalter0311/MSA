@@ -20,6 +20,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 import com.group10.msa.MAS;
+
 public class GameScreen implements Screen{
 
 
@@ -55,37 +56,40 @@ public class GameScreen implements Screen{
 
         //create Camera
         rotationSpeed = 0.5f;
-        camera = new OrthographicCamera(800,480);
-        camera.setToOrtho(false, 800, 480);
+        camera = new OrthographicCamera(800,800);
+        camera.setToOrtho(false, 800, 800);
         camera.update();
         //creates new batch, we could also use the static public batch from menuscreen
 		batch = new SpriteBatch();
 
 		{
 			//
-
-			world = new int[80][48];
+            Map mapA = new Map();
+			world = new int[80][80];
 			for(int i = 0; i < world.length; i++){
 			    for(int j = 0; j < world[0].length; j++){
 			        double rando =  Math.random();
-			        if(rando < 0.33) world[i][j] =1;
-			        else if (rando < 0.66) world[i][j] = 3;
-			        else world[i][j] = 2;
+			        if(rando < 0.33) world[i][j] =0;
+			        else if (rando < 0.66) world[i][j] = 4;
+			        else world[i][j] = 6;
                 }
             }
+
+			//Comment the line below to randomize again
+			world = mapA.getMapArray();
 
 			TextureRegion t1 = new TextureRegion(tiles, 10,10);
 			TextureRegion t2 = new TextureRegion(tiles2, 10,10);
 			TextureRegion twall = new TextureRegion(wall, 10,10);
 			map = new TiledMap();
 			MapLayers layers = map.getLayers();
-			TiledMapTileLayer layer = new TiledMapTileLayer(800, 480, 10, 10);
+			TiledMapTileLayer layer = new TiledMapTileLayer(800, 800, 10, 10);
 			for (int x = 0; x < 80; x++) {
-				for (int y = 47; y >= 0; y--) {
+				for (int y = 79; y >= 0; y--) {
 					Cell cell = new TiledMapTileLayer.Cell();
-					if(world[x][y] == 1){
+					if(world[x][y] == 4){
 						cell.setTile(new StaticTiledMapTile(t2));}
-						else if ( world[x][y] == 3)
+						else if (world[x][y] == 6)
 						    cell.setTile(new StaticTiledMapTile(twall));
 						else {
 							//System.out.println("im here fam");
@@ -98,7 +102,7 @@ public class GameScreen implements Screen{
             TextureRegion tagent = new TextureRegion(agent,10,10);
 
             sprite = new Sprite(tagent);
-            //MapLayer ml= new MapLayer(sprite);
+
 		}
 
 		renderer = new OrthogonalTiledMapRenderer(map);
@@ -163,15 +167,15 @@ public class GameScreen implements Screen{
         batch.end();
         int agentx = (int) sprite.getX()/10;
         int agenty = (int) sprite.getY()/10;
-        System.out.println("agent is on tile x: " + (agentx) + " y: " + (agenty));
-        if(agentx < 80 && agenty < 48)
-            System.out.println("thus hes on tile " + world[agentx][agenty]);
+//        System.out.println("agent is on tile x: " + (agentx) + " y: " + (agenty));
+//        if(agentx < 80 && agenty < 48)
+//            System.out.println("thus hes on tile " + world[agentx][agenty]);
     }
 
 
     private void handleInput() {
         //key ordering is botched for now
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.Z)) {
             camera.zoom += 0.02;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.X)) {
@@ -183,7 +187,7 @@ public class GameScreen implements Screen{
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             camera.translate(3, 0, 0);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.Z)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             camera.translate(0, -3, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
