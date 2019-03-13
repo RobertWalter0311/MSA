@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -76,7 +77,7 @@ public class GameScreen implements Screen{
             }
 
 			//Comment the line below to randomize again
-			world = mapA.getMapArray();
+			//world = mapA.getMapArray();
 
 			TextureRegion t1 = new TextureRegion(tiles, 10,10);
 			TextureRegion t2 = new TextureRegion(tiles2, 10,10);
@@ -119,6 +120,7 @@ public class GameScreen implements Screen{
         //manipulate camera eg. zoom
         handleInput();
         // tell the camera to update its matrices.
+        camera.position.set(sprite.getX(), sprite.getY(), 0);
         camera.update();
 
         // tell the SpriteBatch to render in the
