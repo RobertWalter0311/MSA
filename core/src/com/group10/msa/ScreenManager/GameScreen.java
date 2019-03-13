@@ -20,6 +20,9 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 import com.group10.msa.MAS;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.group10.msa.MapObjects.Agent;
+import com.group10.msa.MapObjects.Map;
 
 public class GameScreen implements Screen{
 
@@ -41,6 +44,7 @@ public class GameScreen implements Screen{
     private float rotationSpeed;
 	private Sprite sprite;
 	private int[][] world;
+	private Agent agent1;
 
 
     public GameScreen(final MAS game) {
@@ -99,6 +103,7 @@ public class GameScreen implements Screen{
 					}
 				}
 				layers.add(layer);
+			agent1 = new Agent(500,500, (float)(0.5*(Math.PI/4)));
             TextureRegion tagent = new TextureRegion(agent,10,10);
 
             sprite = new Sprite(tagent);
@@ -160,7 +165,8 @@ public class GameScreen implements Screen{
             else
                 sprite.translateY(10.0f);
         }
-
+        agent1.move(agent1.metresToCoord((float)1.4));
+        sprite.translate(-sprite.getX()+agent1.getX(), -sprite.getY()+agent1.getY());
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         sprite.draw(batch);

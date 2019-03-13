@@ -23,9 +23,9 @@ public class Map {
 
             for(int i=0; i<mapArray[0].length;i++){
                 for(int j = 0; j<mapArray.length; j++){
-                    System.out.print(mapArray[j][i]);
+                    //System.out.print(mapArray[j][i]);
                 }
-                System.out.println();
+                //System.out.println();
             }
         } catch (IOException FileNotFoundException) {
 
@@ -81,6 +81,15 @@ public class Map {
 
         //System.out.println(array);
         return intArray;
+    }
+
+    public float coordToMetres(float coord){
+        float metres = (float)0.05*coord;
+        return  metres;
+    }
+    public float metresToCoord(float metres){
+        float coord = (float)20*metres;
+        return  metres;
     }
 }
 
