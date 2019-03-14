@@ -23,7 +23,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.group10.msa.MAS;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.group10.msa.MapObjects.Agent;
-import com.group10.msa.MapObjects.Map;
 
 public class GameScreen implements Screen{
 
@@ -104,7 +103,7 @@ public class GameScreen implements Screen{
 					}
 				}
 				layers.add(layer);
-			agent1 = new Agent(500,500, (float)(0.5*(Math.PI/4)));
+			agent1 = new Agent(500,500, (float)(Math.PI/4));
             TextureRegion tagent = new TextureRegion(agent,10,10);
 
             sprite = new Sprite(tagent);
