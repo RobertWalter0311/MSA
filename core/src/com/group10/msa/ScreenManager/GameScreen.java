@@ -45,7 +45,10 @@ public class GameScreen implements Screen{
 	private Sprite sprite;
 	private int[][] world;
 	private Agent agent1;
+	private int frameRate = 0;
 
+	public final float WALK = (float)1.4;
+    public final float SPRINT = (float)3;
 
     public GameScreen(final MAS game) {
         this.game = game;
@@ -103,7 +106,7 @@ public class GameScreen implements Screen{
 					}
 				}
 				layers.add(layer);
-			agent1 = new Agent(500,500, (float)(Math.PI/4));
+			agent1 = new Agent(500,500, (float)(3*Math.PI/2));
             TextureRegion tagent = new TextureRegion(agent,10,10);
 
             sprite = new Sprite(tagent);
@@ -166,7 +169,10 @@ public class GameScreen implements Screen{
             else
                 sprite.translateY(10.0f);
         }
-        agent1.move(agent1.metresToCoord((float)1.4));
+        //telling agent to walk
+        agent1.move(agent1.metresToCoord(WALK));
+        //telling agent to turn to the 0.75PI radians or 135 degrees
+        agent1.turn((float)(0.75*Math.PI));
         sprite.translate(-sprite.getX()+agent1.getX(), -sprite.getY()+agent1.getY());
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -177,6 +183,7 @@ public class GameScreen implements Screen{
 //        System.out.println("agent is on tile x: " + (agentx) + " y: " + (agenty));
 //        if(agentx < 80 && agenty < 48)
 //            System.out.println("thus hes on tile " + world[agentx][agenty]);
+
     }
 
 
