@@ -15,6 +15,7 @@ public class Agent {
         this.world = world;
     }
 
+    //calculates x and y components needed to move (potentially diagonally) at 1.4 metres a second
     public void move(float speed){
         System.out.println(" x " + x + " y " + y);
         if( x > 790 || x < 0 || y > 790 || y < 0)
@@ -36,6 +37,39 @@ public class Agent {
             y += speed*Math.sin(direction - (3*Math.PI)/2);
         }
     }
+
+    //turns at PI/60 radians every frame
+    //capable of determine which way it is fastest to turn, clockwise or anti-clockwise
+    public void turn(float newDir){
+        if(direction != newDir){
+            if(Math.abs(direction-newDir) > Math.PI/60){
+                if(newDir < direction){
+                    if(Math.abs(direction-newDir) > Math.PI) {
+                        direction += Math.PI / 60;
+                    }
+                    else{
+                        direction -= Math.PI / 60;
+                    }
+                }
+                else if(direction < newDir){
+                    if(Math.abs(direction-newDir) > Math.PI) {
+                        direction -= Math.PI / 60;
+                    }
+                    else{
+                        direction += Math.PI / 60;
+                    }
+                }
+            }
+            else{
+                direction = newDir;
+            }
+        }
+        if(direction > 2* Math.PI){
+            direction -= 2*Math.PI;
+        }
+    }
+
+
 
     public float getX(){
         return x;

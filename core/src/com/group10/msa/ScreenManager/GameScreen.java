@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -40,7 +39,6 @@ public class GameScreen implements Screen{
 	private Texture tiles2;
     private Texture wall;
     private Texture agent;
-    private Texture black;
 	private Texture texture;
 	private BitmapFont font;
 	private SpriteBatch batch;
@@ -49,7 +47,10 @@ public class GameScreen implements Screen{
 	public int[][] world;
 	private ShapeRenderer shapeRenderer = new ShapeRenderer();
 	private Agent agent1;
+	private int frameRate = 0;
 
+	public final float WALK = (float)1.4;
+    public final float SPRINT = (float)3;
 
     public GameScreen(final MAS game) {
         this.game = game;
@@ -59,7 +60,7 @@ public class GameScreen implements Screen{
         tiles2 = new Texture(Gdx.files.internal("data/Dirt.png"));
         wall = new Texture(Gdx.files.internal("data/Wall.jpg"));
         agent = new Texture(Gdx.files.internal("data/CropAgent.jpg"));
-        black = new Texture(Gdx.files.internal("data/Black.jpg"));
+
 
 
         //create Camera
@@ -89,7 +90,6 @@ public class GameScreen implements Screen{
 			TextureRegion t1 = new TextureRegion(tiles, 10,10);
 			TextureRegion t2 = new TextureRegion(tiles2, 10,10);
 			TextureRegion twall = new TextureRegion(wall, 10,10);
-            TextureRegion tblack = new TextureRegion(black, 10,10);
 			map = new TiledMap();
 			MapLayers layers = map.getLayers();
 			TiledMapTileLayer layer = new TiledMapTileLayer(800, 800, 10, 10);
@@ -173,7 +173,10 @@ public class GameScreen implements Screen{
             else
                 sprite.translateY(0.1f);
         }
-       // agent1.move(agent1.metresToCoord((float)1.4));
+               //telling agent to walk
+        agent1.move(agent1.metresToCoord(WALK));
+        //telling agent to turn to the 0.75PI radians or 135 degrees
+        agent1.turn((float)(0.75*Math.PI));
         sprite.translate(-sprite.getX()+agent1.getX(), -sprite.getY()+agent1.getY());
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -218,6 +221,12 @@ public class GameScreen implements Screen{
             if(world[agentx][agenty] == 6) System.out.println("thus hes on tile Wall ");
             if(world[agentx][agenty] == 4) System.out.println("thus hes on tile Tower");
         }*/
+
+        int agentx = (int) sprite.getX()/10;
+        int agenty = (int) sprite.getY()/10;
+//        System.out.println("agent is on tile x: " + (agentx) + " y: " + (agenty));
+//        if(agentx < 80 && agenty < 48)
+//            System.out.println("thus hes on tile " + world[agentx][agenty]);
 
     }
 
