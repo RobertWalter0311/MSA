@@ -1,5 +1,7 @@
 package com.group10.msa.MapObjects;
 
+import java.util.ArrayList;
+
 public class Agent {
 
     private float x;
@@ -100,17 +102,19 @@ public class Agent {
         vision[0][0] = this.x+5;
         vision[0][1] = this.y+5;
         //Next up upper point
-        vision[1][0] = (float)(visionDistance*Math.cos((Math.PI/8)+direction)+x+5);
-        vision[1][1] = (float)(visionDistance*Math.sin((Math.PI/8)+direction)+y+5);
+        vision[1][0] = (float)(visionDistance*Math.cos((Math.PI/8)+(direction-Math.PI))+x+5);
+        vision[1][1] = (float)(visionDistance*Math.sin((Math.PI/8)+(direction-Math.PI))+y+5);
         // last point
-        vision[2][0] = (float)(visionDistance*Math.cos(-(Math.PI/8)+direction)+x+5);
-        vision[2][1] = (float)(visionDistance*Math.sin(-(Math.PI/8) +direction)+y+5);
-        float[] point = {80,80};
-        visionField(vision);
-        //System.out.println(isInVisionField(point, vision[0],vision[1]));
+        vision[2][0] = (float)(visionDistance*Math.cos(-(Math.PI/8)+(direction-Math.PI))+x+5);
+        vision[2][1] = (float)(visionDistance*Math.sin(-(Math.PI/8) +(direction-Math.PI))+y+5);
+        for(float[] i : vision){
+            System.out.println(" " + i[0] + " " + i[1]);
+        }
+        //visionField(vision);
+
         return vision;
     }
-    private void visionField(float[][] vision){
+    public ArrayList<float[]> visionField(float[][] vision){
         //find biggest and smallest x,y values
         int maxX = 0, maxY = 0;
         int minX = 79, minY = 79;
@@ -120,13 +124,21 @@ public class Agent {
             if (((int) i[1] / 10) > maxY) maxY = ((int) i[1] / 10);
             if (((int) i[1] / 10) < minY) minY = ((int) i[1] / 10);
         }
+        maxX += 1;
+        maxY +=1;
+        System.out.println("minx "+ minX + " miny " + minY + " maxx " + maxX + " maxy " +maxY );
+        ArrayList<float[]> pointsVision = new ArrayList<float[]>();
         //starting from the smallest
         int[][] agentsVision = new int[maxX-minX+1][maxY-minY+1];
         int count = 0;
         for(int i = maxX; i >= minX;i--){
             for(int j = maxY; j >= minY;j--){
                 float[] p= {i*10,j*10};
-                if(isInVisionField(p, vision[0], vision[1])){
+                //System.out.println(p[0] + " "+ p[1]);
+                if(p[0]>=0 &&p[0] < 800 && p[1] >=0 && p[1] < 800 &&
+                        isInVisionField(p, vision[0], vision[1],vision[2])){
+
+                    pointsVision.add(p);
                     agentsVision[i-minX][j-minY] = world[i][j];
                     count++;
                 }
@@ -140,9 +152,11 @@ public class Agent {
             }
             System.out.println();
         }
+        System.out.println("DIRECTION " + direction);
+        return pointsVision;
 
     }
-    public boolean isInVisionField(float[] point, float[]a,float[]b){
+    public boolean isInVisionField(float[] point, float[]a,float[]b, float[] c){
         //vector from a to point, normalized to length 1
         float[] a_point = {(point[0]-a[0]),(point[1]-a[1])};
         float temp = (float)Math.sqrt((a_point[0]*a_point[0])+(a_point[1]*a_point[1]));
@@ -155,14 +169,16 @@ public class Agent {
         temp = (float) Math.sqrt((ab[0]*ab[0])+(ab[1]*ab[1]));
         ab[0] = ab[0]/temp;
         ab[1] = ab[1]/temp;
+        //vector from a to c, normalized to length 1
+        float[]ac = {(c[0]-a[0]),(c[1]-a[1])};
+        temp = (float) Math.sqrt((ac[0]*ac[0])+(ac[1]*ac[1]));
+        ac[0] = ac[0]/temp;
+        ac[1] = ac[1]/temp;
 
+        float angleAB = (float)Math.acos((a_point[0]*ab[0])+(a_point[1]*ab[1]));
+       float angleAC =  (float)Math.acos((a_point[0]*ac[0])+(a_point[1]*ac[1]));
+        if(angleAB >= 0 && angleAB <= (Math.PI/4) && angleAC >= 0 && angleAC <= (Math.PI/4)){
 
-
-        float angle = (float)Math.acos((a_point[0]*ab[0])+(a_point[1]*ab[1]));
-       angle = (float) Math.toDegrees(angle);
-       //System.out.println("ANGLE" + angle);
-        //if(angle > 0 && angle <= (Math.PI/4)){
-        if(angle >= 0 && angle <= 45){
             return true;}
         return false;
     }

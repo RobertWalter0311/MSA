@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,6 +24,8 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 import com.group10.msa.MAS;
 import com.group10.msa.MapObjects.Agent;
+
+import java.util.ArrayList;
 //import com.group10.msa.MapObjects.Map;
 
 public class GameScreen implements Screen{
@@ -109,7 +112,7 @@ public class GameScreen implements Screen{
 				}
 				//layer.setOpacity(0.f);
 				layers.add(layer);
-			agent1 = new Agent(0,0, (float)((Math.PI/4)),world);
+			agent1 = new Agent(500,500, (float)((Math.PI/4)),world);
 
             TextureRegion tagent = new TextureRegion(agent,10,10);
 
@@ -174,9 +177,9 @@ public class GameScreen implements Screen{
                 sprite.translateY(0.1f);
         }
                //telling agent to walk
-        agent1.move(agent1.metresToCoord(WALK));
+        //agent1.move(agent1.metresToCoord(WALK));
         //telling agent to turn to the 0.75PI radians or 135 degrees
-        agent1.turn((float)(0.75*Math.PI));
+        //agent1.turn((float)(0.75*Math.PI));
         sprite.translate(-sprite.getX()+agent1.getX(), -sprite.getY()+agent1.getY());
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -196,7 +199,7 @@ public class GameScreen implements Screen{
         float[][] vision =  agent1.vision();
         System.out.printf(" %s %s%n", vision[0][0], vision[0][1]);
         //degrees not radians
-        float start = (float)(Math.toDegrees(agent1.getDirection())-22.5);//(float)(agent1.getDirection()+(Math.PI/8));
+        float start = (float)(Math.toDegrees(agent1.getDirection())-(22.5+180));//(float)(agent1.getDirection()+(Math.PI/8));
         shapeRenderer.arc(vision[0][0], vision[0][1], 75f,start,45f );
 
 
@@ -204,10 +207,16 @@ public class GameScreen implements Screen{
                 //shapeRenderer.cone(vision[0][0],vision[0][1], 0, 75f,75f);
         //shapeRenderer.triangle(vision[0][0],vision[0][1],vision[1][0],vision[1][1],vision[2][0],vision[2][1]);
         //shapeRenderer.triangle(agentx,agenty,(float)(50*Math.cos(-0.3926991)+agentx),(float)(50*Math.sin(-0.3926991)+agenty),(float)(50*Math.cos(0.3926991)+agentx),(float)(50*Math.sin(0.3926991)+agenty) );
+
         shapeRenderer.setColor(new Color(1,0,0,1));
         shapeRenderer. point(80,80,0);
         shapeRenderer. point(vision[1][0],vision[1][1],0);
-        shapeRenderer. point(vision[2][0],vision[2][1],0);
+        //shapeRenderer. point(vision[2][0],vision[2][1],0);
+        shapeRenderer.setColor(new Color(0,0,1,1));
+        ArrayList<float[]> ps = agent1.visionField(agent1.vision());
+        for(float[] p : ps){
+            shapeRenderer. point(p[0],p[1],0);
+        }
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
@@ -222,8 +231,6 @@ public class GameScreen implements Screen{
             if(world[agentx][agenty] == 4) System.out.println("thus hes on tile Tower");
         }*/
 
-        int agentx = (int) sprite.getX()/10;
-        int agenty = (int) sprite.getY()/10;
 //        System.out.println("agent is on tile x: " + (agentx) + " y: " + (agenty));
 //        if(agentx < 80 && agenty < 48)
 //            System.out.println("thus hes on tile " + world[agentx][agenty]);
