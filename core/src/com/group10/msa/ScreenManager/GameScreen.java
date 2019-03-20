@@ -24,8 +24,6 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 import com.group10.msa.MAS;
 import com.group10.msa.MapObjects.Agent;
-
-import java.util.ArrayList;
 //import com.group10.msa.MapObjects.Map;
 
 public class GameScreen implements Screen{
@@ -211,12 +209,7 @@ public class GameScreen implements Screen{
         shapeRenderer.setColor(new Color(1,0,0,1));
         shapeRenderer. point(80,80,0);
         shapeRenderer. point(vision[1][0],vision[1][1],0);
-        //shapeRenderer. point(vision[2][0],vision[2][1],0);
-        shapeRenderer.setColor(new Color(0,0,1,1));
-        ArrayList<float[]> ps = agent1.visionField(agent1.vision());
-        for(float[] p : ps){
-            shapeRenderer. point(p[0],p[1],0);
-        }
+        shapeRenderer. point(vision[2][0],vision[2][1],0);
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
