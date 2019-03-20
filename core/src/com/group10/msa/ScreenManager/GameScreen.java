@@ -117,7 +117,7 @@ public class GameScreen implements Screen{
 				//layer.setOpacity(0.f);
 				layers.add(layer);
 			agent1 = new Agent(400,400, (float)((0*Math.PI/4)),world);
-			Vector2 v1 = new Vector2(200,100);
+			Vector2 v1 = new Vector2(400,600);
             Vector2 v2 = new Vector2(400,400);
             target1 = new TargetArea(Target, v1);
             target2 = new TargetArea(Target, v2);
@@ -184,7 +184,7 @@ public class GameScreen implements Screen{
                 sprite.translateY(0.1f);
         }
 
-        //agent1.swerveTo(target1);
+        agent1.swerveTo(target1);
         sprite.translate(-sprite.getX()+agent1.getX(), -sprite.getY()+agent1.getY());
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -204,7 +204,7 @@ public class GameScreen implements Screen{
         float[][] vision =  agent1.vision();
         System.out.printf(" %s %s%n", vision[0][0], vision[0][1]);
         //degrees not radians
-        float start = (float)(Math.toDegrees(agent1.getDirection())-(22.5+180));//(float)(agent1.getDirection()+(Math.PI/8));
+        float start = (float)(Math.toDegrees(agent1.getDirection())-(22.5));//(float)(agent1.getDirection()+(Math.PI/8));
         shapeRenderer.arc(vision[0][0], vision[0][1], 75f,start,45f );
 
 
@@ -234,7 +234,7 @@ public class GameScreen implements Screen{
 //        System.out.println("agent is on tile x: " + (agentx) + " y: " + (agenty));
 //        if(agentx < 80 && agenty < 48)
 //            System.out.println("thus hes on tile " + world[agentx][agenty]);
-
+        System.out.println("DIRECTIONNN" + agent1.getDirection());
     }
 
 

@@ -27,7 +27,7 @@ public class Agent {
         else{
             walking = false;
         }
-        if(direction < Math.PI/2){
+        /*if(direction < Math.PI/2){
             x += speed*Math.sin(direction);
             y += speed*Math.cos(direction);
         }
@@ -42,7 +42,9 @@ public class Agent {
         if(direction >= (3*Math.PI)/2){
             x -= speed*Math.cos(direction - (3*Math.PI)/2);
             y += speed*Math.sin(direction - (3*Math.PI)/2);
-        }
+        }*/
+        x += speed*Math.cos(direction);
+        y+= speed*Math.sin(direction);
     }
 
     //turns at PI/60 radians every frame
@@ -59,21 +61,24 @@ public class Agent {
             }
             if(Math.abs(direction-newDir) > turnSpeed){
                 if(newDir < direction){
-                    if(Math.abs(direction-newDir) > Math.PI) {
+                    /*if(Math.abs(direction-newDir) > Math.PI) {
                         direction += turnSpeed;
                     }
                     else{
                         direction -= turnSpeed;
-                    }
+                    }*/
+                    direction -= turnSpeed;
                 }
                 else if(direction < newDir){
-                    if(Math.abs(direction-newDir) > Math.PI) {
+                    /*if(Math.abs(direction-newDir) > Math.PI) {
                         direction -= turnSpeed;
                     }
                     else{
                         direction += turnSpeed;
-                    }
+                    }*/
+                    direction += turnSpeed;
                 }
+
             }
             else{
                 direction = newDir;
@@ -95,7 +100,8 @@ public class Agent {
         }
 
         else{
-            if(Math.abs(x-objectX) > 1 && Math.abs(y-objectY) > 1) {
+            if(Math.abs(x-objectX) > 1 || Math.abs(y-objectY) > 1) {
+
                 move(metresToCoord(1.4f));
             }
         }
@@ -109,9 +115,9 @@ public class Agent {
             turn(getAngle(object));
             System.out.println(getAngle(object));
         }
-
-
-        if(Math.abs(x-objectX) > 1 && Math.abs(y-objectY) > 1 ) {
+        System.out.println(" OIOI " + Math.abs(x-objectX) + " " + Math.abs(y-objectY));
+        if(Math.abs(x-objectX) > 1|| Math.abs(y-objectY) > 1 ) {
+            System.out.println("HERE");
             move(metresToCoord(1.4f));
         }
 
@@ -119,7 +125,7 @@ public class Agent {
     }
     //finds angle of location relative to agent
     public float getAngle(MapObject object) {
-        if(object.getPos().x >= x && object.getPos().y >= y) {
+        /*if(object.getPos().x >= x && object.getPos().y >= y) {
             return (float) (Math.atan((object.getPos().x - x) / (object.getPos().y - y)));
         }
         else if(object.getPos().x >= x && object.getPos().y <= y){
@@ -133,7 +139,20 @@ public class Agent {
         }
         else {
             return 0;
-        }
+        }*/
+        float[] obj = {(object.getPos().x-x), (object.getPos().y-y)};
+        float temp = (float) Math.sqrt(obj[0]*obj[0] + obj[1]*obj[1]);
+        obj[0] = obj[0]/temp;
+        obj[1] = obj[1]/temp;
+
+        float[] us={(x+5) - x,y -y};
+        float temo = (float) Math.sqrt(us[0]*us[0] + us[1]*us[1]);
+        us[0] = us[0]/temo;
+        us[1] = us[1]/temo;
+
+        float angle= (float)Math.acos((obj[0]*us[0])+(obj[1]*us[1]));
+        System.out.println(angle);
+        return angle;
     }
 
 
@@ -166,15 +185,15 @@ public class Agent {
         vision[0][0] = this.x+5;
         vision[0][1] = this.y+5;
         //Next up upper point
-        vision[1][0] = (float)(visionDistance*Math.cos((Math.PI/8)+(direction-Math.PI))+x+5);
-        vision[1][1] = (float)(visionDistance*Math.sin((Math.PI/8)+(direction-Math.PI))+y+5);
+        vision[1][0] = (float)(visionDistance*Math.cos((Math.PI/8)+direction)+x+5);
+        vision[1][1] = (float)(visionDistance*Math.sin((Math.PI/8)+direction)+y+5);
         // last point
-        vision[2][0] = (float)(visionDistance*Math.cos(-(Math.PI/8)+(direction-Math.PI))+x+5);
-        vision[2][1] = (float)(visionDistance*Math.sin(-(Math.PI/8) +(direction-Math.PI))+y+5);
+        vision[2][0] = (float)(visionDistance*Math.cos(-(Math.PI/8)+direction)+x+5);
+        vision[2][1] = (float)(visionDistance*Math.sin(-(Math.PI/8)+direction)+y+5);
         for(float[] i : vision){
             System.out.println(" " + i[0] + " " + i[1]);
         }
-        //visionField(vision);
+        visionField(vision);
 
         return vision;
     }
@@ -192,7 +211,7 @@ public class Agent {
         maxY +=1;
         System.out.println("minx "+ minX + " miny " + minY + " maxx " + maxX + " maxy " +maxY );
         //starting from the smallest
-        int[][] agentsVision = new int[maxX-minX+1][maxY-minY+1];
+        int[][] agentsVision = new int[maxX-minX][maxY-minY];
         int count = 0;
         for(int i = maxX; i >= minX;i--){
             for(int j = maxY; j >= minY;j--){
@@ -221,6 +240,13 @@ public class Agent {
                     }
                 }
             }
+        }
+        System.out.println("Direction" + direction);
+        for(int i = 0; i < agentsVision.length;i++){
+            for(int j = 0; j < agentsVision[0].length; j++){
+                System.out.print(agentsVision[i][j]);
+            }
+            System.out.println();
         }
     }
     public boolean isInVisionField(float[] point, float[]a,float[]b, float[] c){
