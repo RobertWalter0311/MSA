@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -26,7 +25,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.group10.msa.MAS;
 import com.group10.msa.MapObjects.Agent;
 import com.group10.msa.MapObjects.Map;
-import com.group10.msa.MapObjects.MapObject;
 import com.group10.msa.MapObjects.TargetArea;
 
 import java.util.ArrayList;
@@ -55,7 +53,9 @@ public class GameScreen implements Screen{
 	private Sprite sprite;
 	public int[][] world;
 	private ShapeRenderer shapeRenderer = new ShapeRenderer();
-	private Agent agent1;
+	private ArrayList<Agent> agents = new ArrayList<Agent>();
+	//private Agent agent1;
+	//private Agent agent2;
 	private TargetArea target1;
 	private TargetArea target2;
 	private int frameRate = 0;
@@ -120,14 +120,17 @@ public class GameScreen implements Screen{
 				}
 				//layer.setOpacity(0.f);
 				layers.add(layer);
-			agent1 = new Agent(400,400, (float)((0*Math.PI/4)),world);
-			Vector2 v1 = new Vector2(400,600);
+			Agent agent1 = new Agent(400,400, (float)((0*Math.PI/4)),world);
+			Agent agent2 = new Agent(200,200, 0, world);
+			agents.add(agent1);
+			agents.add(agent2);
+			Vector2 v1 = new Vector2(300,600);
             Vector2 v2 = new Vector2(400,400);
             target1 = new TargetArea(Target, v1);
             target2 = new TargetArea(Target, v2);
-            TextureRegion tagent = new TextureRegion(agent,10,10);
-
-            sprite = new Sprite(tagent);
+            //Texture agent = new Texture(Gdx.files.internal("data/CropAgent.jpg"));
+            //TextureRegion tagent = new TextureRegion(agent,10,10);
+            //Sprite sprite = new Sprite(tagent);
 
 		}
 
@@ -163,87 +166,44 @@ public class GameScreen implements Screen{
 		renderer.setView(camera);
 		renderer.render();
 
-        if(Gdx.input.isKeyPressed(Input.Keys.LEFT)&& sprite.getX() > 0){
-            if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
-                sprite.translateX(-0.1f);
-            else
-                sprite.translateX(-10.0f);
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)&& sprite.getX() < 790){
-            if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
-                sprite.translateX(10f);
-            else
-                sprite.translateX(0.1f);
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.DOWN)&& sprite.getY() > 0){
-            if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
-                sprite.translateY(-10f);
-            else
-                sprite.translateY(-0.1f);
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.UP)&& sprite.getY() < 790){
-            if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
-                sprite.translateY(10f);
-            else
-                sprite.translateY(0.1f);
-        }
+        for(Agent agent: agents) {
+            batch.setProjectionMatrix(camera.combined);
+            batch.begin();
+            batch.setProjectionMatrix(camera.combined);
+            agent.swerveTo(target1, WALK);
+            agent.sprite.translate(-agent.sprite.getX() + agent.getX(), -agent.sprite.getY() + agent.getY());
 
-        agent1.swerveTo(target1, WALK);
-        sprite.translate(-sprite.getX()+agent1.getX(), -sprite.getY()+agent1.getY());
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        batch.setProjectionMatrix(camera.combined);
-        sprite.draw(batch);
-        batch.end();
+            agent.sprite.draw(batch);
+            batch.end();
+
+        }
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.setColor(new Color(1,1,1,0.5f));
-        int agentx = (int) (sprite.getX()+5);
-        int agenty = (int) (sprite.getY()+5);
-        //float x2 = (float) Math.cos(45);
 
-        float[][] vision =  agent1.vision();
-        System.out.printf(" %s %s%n", vision[0][0], vision[0][1]);
-        //degrees not radians
-        float start = (float)(Math.toDegrees(agent1.getDirection())-(22.5));//(float)(agent1.getDirection()+(Math.PI/8));
-        shapeRenderer.arc(vision[0][0], vision[0][1], 75f,start,45f );
+        for (Agent agent:agents) {
+            shapeRenderer.setColor(new Color(1,1,1,0.5f));
+            float[][] vision = agent.vision();
+            System.out.printf(" %s %s%n", vision[0][0], vision[0][1]);
+            //degrees not radians
+            float start = (float) (Math.toDegrees(agent.getDirection()) - (22.5));
+            shapeRenderer.arc(vision[0][0], vision[0][1], agent.visionDistance, start, 45f);
+            shapeRenderer.setColor(1, 1, 1, 0.2f);
+            shapeRenderer.circle(vision[0][0], vision[0][1], 100);
+            shapeRenderer.setColor(new Color(0, 0, 1, 1));
+            ArrayList<float[]> points = agent.visionField(vision);
+            for (float[] p : points)
+                shapeRenderer.point(p[0], p[1], 0);
+        }
 
-
-
-                //shapeRenderer.cone(vision[0][0],vision[0][1], 0, 75f,75f);
-        //shapeRenderer.triangle(vision[0][0],vision[0][1],vision[1][0],vision[1][1],vision[2][0],vision[2][1]);
-        //shapeRenderer.triangle(agentx,agenty,(float)(50*Math.cos(-0.3926991)+agentx),(float)(50*Math.sin(-0.3926991)+agenty),(float)(50*Math.cos(0.3926991)+agentx),(float)(50*Math.sin(0.3926991)+agenty) );
-
-        shapeRenderer.setColor(new Color(1,0,0,1));
-        shapeRenderer. point(80,80,0);
-        shapeRenderer. point(vision[1][0],vision[1][1],0);
-        shapeRenderer. point(vision[2][0],vision[2][1],0);
-
-        shapeRenderer.setColor(new Color(0,0,1,1));
-        ArrayList<float[]> points = agent1.visionField(vision);
-        for(float[] p : points)
-            shapeRenderer.point(p[0],p[1],0);
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
 
 
-       /* agentx = agentx/10;
-        agenty = agenty/10;
-        System.out.println("agent is on tile x: " + (agentx) + " y: " + (agenty));
-        if(agentx < 80 && agenty < 80){
-            if(world[agentx][agenty] == 1 ) System.out.println("thus hes on tile Grass ");
-            if(world[agentx][agenty] == 6) System.out.println("thus hes on tile Wall ");
-            if(world[agentx][agenty] == 4) System.out.println("thus hes on tile Tower");
-        }*/
 
-//        System.out.println("agent is on tile x: " + (agentx) + " y: " + (agenty));
-//        if(agentx < 80 && agenty < 48)
-//            System.out.println("thus hes on tile " + world[agentx][agenty]);
-        System.out.println("DIRECTIONNN" + agent1.getDirection());
     }
 
 

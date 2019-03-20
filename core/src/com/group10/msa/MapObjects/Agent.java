@@ -1,5 +1,10 @@
 package com.group10.msa.MapObjects;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
 import java.util.ArrayList;
 
 public class Agent {
@@ -8,19 +13,27 @@ public class Agent {
     private float y;
     private float direction;
     private boolean walking = true;
-    private float visionDistance = 75;
+    public float speed = 1.4f;
+    public float visionDistance = 150;
+    public float visionDegree = (float)(Math.PI/4);
     private int[][] world;
+    public Sprite sprite;
     private boolean patrol = true;
+
 
     public Agent(float xStart, float yStart, float startDir,int[][] world){
         this.x = xStart;
         this.y = yStart;
         this.direction = startDir;
         this.world = world;
+        Texture agent = new Texture(Gdx.files.internal("data/CropAgent.jpg"));
+        TextureRegion tagent = new TextureRegion(agent,10,10);
+        this.sprite = new Sprite(tagent);
     }
 
     //calculates x and y components needed to move (potentially diagonally) at 1.4 metres a second
     public void move(float speed){
+        this.speed = speed;
         System.out.println(" x " + x + " y " + y);
         if( x > 790 || x < 0 || y > 790 || y < 0)
             direction *= Math.PI; // to be deleted, just for testing
@@ -118,13 +131,11 @@ public class Agent {
             turn(getAngle(object));
             System.out.println(getAngle(object));
         }
-
-
-            System.out.println(" OIOI " + Math.abs(x - objectX) + " " + Math.abs(y - objectY));
-            if (Math.abs(x - objectX) > 1 || Math.abs(y - objectY) > 1) {
-                System.out.println("HERE");
-                move(metresToCoord(1.4f));
-            }
+        System.out.println(" OIOI " + Math.abs(x-objectX) + " " + Math.abs(y-objectY));
+        if(Math.abs(x-objectX) > 1|| Math.abs(y-objectY) > 1 ) {
+            System.out.println("HERE");
+            move(metresToCoord(1.4f));
+        }
 
 
 
@@ -182,7 +193,6 @@ public class Agent {
         us[1] = us[1]/temo;
 
         float angle= (float)Math.acos((obj[0]*us[0])+(obj[1]*us[1]));
-        System.out.println(angle);
         return angle;
     }
 
@@ -216,11 +226,11 @@ public class Agent {
         vision[0][0] = this.x+5;
         vision[0][1] = this.y+5;
         //Next up upper point
-        vision[1][0] = (float)(visionDistance*Math.cos((Math.PI/8)+direction)+x+5);
-        vision[1][1] = (float)(visionDistance*Math.sin((Math.PI/8)+direction)+y+5);
+        vision[1][0] = (float)(visionDistance*Math.cos((visionDegree/2)+direction)+x+5);
+        vision[1][1] = (float)(visionDistance*Math.sin((visionDegree/2)+direction)+y+5);
         // last point
-        vision[2][0] = (float)(visionDistance*Math.cos(-(Math.PI/8)+direction)+x+5);
-        vision[2][1] = (float)(visionDistance*Math.sin(-(Math.PI/8)+direction)+y+5);
+        vision[2][0] = (float)(visionDistance*Math.cos(-(visionDegree/2)+direction)+x+5);
+        vision[2][1] = (float)(visionDistance*Math.sin(-(visionDegree/2)+direction)+y+5);
         for(float[] i : vision){
             System.out.println(" " + i[0] + " " + i[1]);
         }
