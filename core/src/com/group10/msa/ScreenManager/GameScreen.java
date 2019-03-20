@@ -186,7 +186,7 @@ public class GameScreen implements Screen{
                 sprite.translateY(0.1f);
         }
 
-        agent1.swerveTo(target1);
+        //agent1.swerveTo(target1);
         sprite.translate(-sprite.getX()+agent1.getX(), -sprite.getY()+agent1.getY());
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
