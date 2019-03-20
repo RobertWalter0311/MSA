@@ -27,6 +27,8 @@ import com.group10.msa.MapObjects.Agent;
 import com.group10.msa.MapObjects.Map;
 import com.group10.msa.MapObjects.TargetArea;
 
+import java.util.ArrayList;
+
 import static com.group10.msa.MapObjects.MapObject.MapType.Target;
 //import com.group10.msa.MapObjects.Map;
 
@@ -217,6 +219,11 @@ public class GameScreen implements Screen{
         shapeRenderer. point(80,80,0);
         shapeRenderer. point(vision[1][0],vision[1][1],0);
         shapeRenderer. point(vision[2][0],vision[2][1],0);
+
+        shapeRenderer.setColor(new Color(0,0,1,1));
+        ArrayList<float[]> points = agent1.visionField(vision);
+        for(float[] p : points)
+            shapeRenderer.point(p[0],p[1],0);
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 

@@ -1,5 +1,7 @@
 package com.group10.msa.MapObjects;
 
+import java.util.ArrayList;
+
 public class Agent {
 
     private float x;
@@ -193,11 +195,11 @@ public class Agent {
         for(float[] i : vision){
             System.out.println(" " + i[0] + " " + i[1]);
         }
-        visionField(vision);
+       // visionField(vision);
 
         return vision;
     }
-    public void visionField(float[][] vision){
+    public ArrayList<float[]> visionField(float[][] vision){
         //find biggest and smallest x,y values
         int maxX = 0, maxY = 0;
         int minX = 79, minY = 79;
@@ -207,11 +209,12 @@ public class Agent {
             if (((int) i[1] / 10) > maxY) maxY = ((int) i[1] / 10);
             if (((int) i[1] / 10) < minY) minY = ((int) i[1] / 10);
         }
+        ArrayList<float[]> points = new ArrayList<float[]>();
         maxX += 1;
         maxY +=1;
         System.out.println("minx "+ minX + " miny " + minY + " maxx " + maxX + " maxy " +maxY );
         //starting from the smallest
-        int[][] agentsVision = new int[maxX-minX][maxY-minY];
+        int[][] agentsVision = new int[maxX-minX+1][maxY-minY+1];
         int count = 0;
         for(int i = maxX; i >= minX;i--){
             for(int j = maxY; j >= minY;j--){
@@ -221,6 +224,7 @@ public class Agent {
                         isInVisionField(p, vision[0], vision[1],vision[2])){
                     agentsVision[i-minX][j-minY] = world[i][j];
                     count++;
+                    points.add(p);
                 }
             }
         }
@@ -235,12 +239,14 @@ public class Agent {
                                 k = 10;
                                 l=10;
                                 count++;
+                                points.add(p);
                             }
                         }
                     }
                 }
             }
         }
+        agentsVision[((int)vision[0][0]/10)-minX][((int)vision[0][1]/10)-minY] = 9;
         System.out.println("Direction" + direction);
         for(int i = 0; i < agentsVision.length;i++){
             for(int j = 0; j < agentsVision[0].length; j++){
@@ -248,6 +254,7 @@ public class Agent {
             }
             System.out.println();
         }
+        return points;
     }
     public boolean isInVisionField(float[] point, float[]a,float[]b, float[] c){
         //vector from a to point, normalized to length 1
