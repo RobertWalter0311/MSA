@@ -14,8 +14,14 @@ public class Map {
         try {
             mapArray = readFileArray();
 
+            for(int i=0; i<mapArray[0].length;i++){
+                for(int j = 0; j<mapArray.length; j++){
+                    System.out.print(mapArray[j][i]);
+                }
+                System.out.println();
+            }
         } catch (IOException FileNotFoundException) {
-            System.out.println("ERROR");
+
         }
 
     }
@@ -24,7 +30,7 @@ public class Map {
     }
 
     public int[][] readFileArray() throws IOException {
-        File file = new File("C:\\Users\\Notebook\\git\\MSA\\MSA\\core\\assets\\Data\\1wall.tmx");
+        File file = new File("/Users/juluen/IdeaProjects/MSA/core/assets/Data/1wall.tmx");
         FileInputStream fileStream = new FileInputStream(file);
         InputStreamReader input = new InputStreamReader(fileStream);
         BufferedReader reader = new BufferedReader(input);
