@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
@@ -22,8 +22,14 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.group10.msa.MAS;
 import com.group10.msa.MapObjects.Agent;
+import com.group10.msa.MapObjects.Map;
+import com.group10.msa.MapObjects.MapObject;
+import com.group10.msa.MapObjects.TargetArea;
+
+import static com.group10.msa.MapObjects.MapObject.MapType.Target;
 //import com.group10.msa.MapObjects.Map;
 
 public class GameScreen implements Screen{
@@ -48,6 +54,8 @@ public class GameScreen implements Screen{
 	public int[][] world;
 	private ShapeRenderer shapeRenderer = new ShapeRenderer();
 	private Agent agent1;
+	private TargetArea target1;
+	private TargetArea target2;
 	private int frameRate = 0;
 
 	public final float WALK = (float)1.4;
@@ -86,7 +94,7 @@ public class GameScreen implements Screen{
             }
 
 			//Comment the line below to randomize again
-			//world = mapA.getMapArray();
+			world = mapA.getMapArray();
 
 			TextureRegion t1 = new TextureRegion(tiles, 10,10);
 			TextureRegion t2 = new TextureRegion(tiles2, 10,10);
@@ -110,8 +118,11 @@ public class GameScreen implements Screen{
 				}
 				//layer.setOpacity(0.f);
 				layers.add(layer);
-			agent1 = new Agent(500,500, (float)((Math.PI/4)),world);
-
+			agent1 = new Agent(400,400, (float)((0*Math.PI/4)),world);
+			Vector2 v1 = new Vector2(200,100);
+            Vector2 v2 = new Vector2(400,400);
+            target1 = new TargetArea(Target, v1);
+            target2 = new TargetArea(Target, v2);
             TextureRegion tagent = new TextureRegion(agent,10,10);
 
             sprite = new Sprite(tagent);
@@ -174,10 +185,8 @@ public class GameScreen implements Screen{
             else
                 sprite.translateY(0.1f);
         }
-               //telling agent to walk
-        //agent1.move(agent1.metresToCoord(WALK));
-        //telling agent to turn to the 0.75PI radians or 135 degrees
-        //agent1.turn((float)(0.75*Math.PI));
+
+        agent1.swerveTo(target1);
         sprite.translate(-sprite.getX()+agent1.getX(), -sprite.getY()+agent1.getY());
         batch.setProjectionMatrix(camera.combined);
         batch.begin();

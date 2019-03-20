@@ -5,6 +5,7 @@ public class Agent {
     private float x;
     private float y;
     private float direction;
+    private boolean walking = true;
     private float visionDistance = 75;
     private int[][] world;
 
@@ -20,6 +21,12 @@ public class Agent {
         System.out.println(" x " + x + " y " + y);
         if( x > 790 || x < 0 || y > 790 || y < 0)
             direction *= Math.PI; // to be deleted, just for testing
+        if(speed == metresToCoord((float)1.4)){
+            walking = true;
+        }
+        else{
+            walking = false;
+        }
         if(direction < Math.PI/2){
             x += speed*Math.sin(direction);
             y += speed*Math.cos(direction);
@@ -42,21 +49,29 @@ public class Agent {
     //capable of determine which way it is fastest to turn, clockwise or anti-clockwise
     public void turn(float newDir){
         if(direction != newDir){
-            if(Math.abs(direction-newDir) > Math.PI/60){
+            float turnSpeed = (float)(Math.PI / 60);
+            if(walking == true){
+                turnSpeed = (float)(Math.PI / 60);
+            }
+            else{
+                turnSpeed = (float)((1f/18f)*(Math.PI / 60f));
+                System.out.println(turnSpeed);
+            }
+            if(Math.abs(direction-newDir) > turnSpeed){
                 if(newDir < direction){
                     if(Math.abs(direction-newDir) > Math.PI) {
-                        direction += Math.PI / 60;
+                        direction += turnSpeed;
                     }
                     else{
-                        direction -= Math.PI / 60;
+                        direction -= turnSpeed;
                     }
                 }
                 else if(direction < newDir){
                     if(Math.abs(direction-newDir) > Math.PI) {
-                        direction -= Math.PI / 60;
+                        direction -= turnSpeed;
                     }
                     else{
-                        direction += Math.PI / 60;
+                        direction += turnSpeed;
                     }
                 }
             }
@@ -67,8 +82,59 @@ public class Agent {
         if(direction > 2* Math.PI){
             direction -= 2*Math.PI;
         }
+        else if(direction < 0){
+            direction += 2* Math.PI;
+        }
+    }
+    //experimental, moves straight to a target area
+    public void headTo(MapObject object){
+        float objectX = object.getPos().x;
+        float objectY = object.getPos().y;
+        if(direction != getAngle(object)) {
+            turn(getAngle(object));
+        }
+
+        else{
+            if(Math.abs(x-objectX) > 1 && Math.abs(y-objectY) > 1) {
+                move(metresToCoord(1.4f));
+            }
+        }
+
     }
 
+    public void swerveTo(MapObject object){
+        float objectX = object.getPos().x;
+        float objectY = object.getPos().y;
+        if(direction != getAngle(object)) {
+            turn(getAngle(object));
+            System.out.println(getAngle(object));
+        }
+
+
+        if(Math.abs(x-objectX) > 1 && Math.abs(y-objectY) > 1 ) {
+            move(metresToCoord(1.4f));
+        }
+
+
+    }
+    //finds angle of location relative to agent
+    public float getAngle(MapObject object) {
+        if(object.getPos().x >= x && object.getPos().y >= y) {
+            return (float) (Math.atan((object.getPos().x - x) / (object.getPos().y - y)));
+        }
+        else if(object.getPos().x >= x && object.getPos().y <= y){
+            return (float) (Math.PI/2f + Math.atan((-object.getPos().y + y) / (object.getPos().x - x)));
+        }
+        else if(object.getPos().x <= x && object.getPos().y <= y){
+            return (float) (Math.PI + Math.atan((-object.getPos().x + x) / (-object.getPos().y + y)));
+        }
+        else if(object.getPos().x <= x && object.getPos().y >= y){
+            return (float) ((3f/2f)*Math.PI + Math.atan((object.getPos().y - y) / (-object.getPos().x + x)));
+        }
+        else {
+            return 0;
+        }
+    }
 
 
     public float getX(){

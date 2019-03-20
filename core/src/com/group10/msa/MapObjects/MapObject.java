@@ -3,7 +3,6 @@ package com.group10.msa.MapObjects;
 import com.badlogic.gdx.math.Vector2;
 
 public class MapObject {
-
     public enum MapType{
         Grass, Dirt, Sand, Water, Wall, Tree , Tower, Target,
     }
