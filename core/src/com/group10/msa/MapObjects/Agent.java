@@ -10,6 +10,7 @@ public class Agent {
     private boolean walking = true;
     private float visionDistance = 75;
     private int[][] world;
+    private boolean patrol = true;
 
     public Agent(float xStart, float yStart, float startDir,int[][] world){
         this.x = xStart;
@@ -110,20 +111,48 @@ public class Agent {
 
     }
 
-    public void swerveTo(MapObject object){
+    public void swerveTo(MapObject object, float speed){
         float objectX = object.getPos().x;
         float objectY = object.getPos().y;
         if(direction != getAngle(object)) {
             turn(getAngle(object));
             System.out.println(getAngle(object));
         }
-        System.out.println(" OIOI " + Math.abs(x-objectX) + " " + Math.abs(y-objectY));
-        if(Math.abs(x-objectX) > 1|| Math.abs(y-objectY) > 1 ) {
-            System.out.println("HERE");
-            move(metresToCoord(1.4f));
+
+
+            System.out.println(" OIOI " + Math.abs(x - objectX) + " " + Math.abs(y - objectY));
+            if (Math.abs(x - objectX) > 1 || Math.abs(y - objectY) > 1) {
+                System.out.println("HERE");
+                move(metresToCoord(1.4f));
+            }
+
+
+
+    }
+
+    public boolean inProximity(MapObject object){
+        if(Math.abs(x-object.getPos().x) > 1 && Math.abs(y-object.getPos().y) > 1) {
+            return false;
         }
+        else{
+            return true;
+        }
+    }
+    public void patrol(MapObject dest1, MapObject dest2, float speed) {
 
 
+        if (patrol) {
+            swerveTo(dest2, speed);
+        } else {
+            swerveTo(dest1, speed);
+        }
+        if (inProximity(dest1)) {
+            patrol = true;
+        }
+        if (inProximity(dest2)) {
+            patrol = false;
+
+        }
     }
     //finds angle of location relative to agent
     public float getAngle(MapObject object) {

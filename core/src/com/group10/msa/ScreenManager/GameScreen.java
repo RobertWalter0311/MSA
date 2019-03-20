@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -25,6 +26,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.group10.msa.MAS;
 import com.group10.msa.MapObjects.Agent;
 import com.group10.msa.MapObjects.Map;
+import com.group10.msa.MapObjects.MapObject;
 import com.group10.msa.MapObjects.TargetArea;
 
 import java.util.ArrayList;
@@ -186,7 +188,7 @@ public class GameScreen implements Screen{
                 sprite.translateY(0.1f);
         }
 
-        agent1.swerveTo(target1);
+        agent1.swerveTo(target1, WALK);
         sprite.translate(-sprite.getX()+agent1.getX(), -sprite.getY()+agent1.getY());
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
