@@ -1,12 +1,5 @@
 package com.group10.msa.MapObjects;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Vector2;
-import java.util.ArrayList;
-import java.io.File;
-import java.io.IOException;
-import java.util.Scanner;
 import java.io.*;
 
 
@@ -23,9 +16,9 @@ public class Map {
 
             for(int i=0; i<mapArray[0].length;i++){
                 for(int j = 0; j<mapArray.length; j++){
-                    //System.out.print(mapArray[j][i]);
+                    System.out.print(mapArray[j][i]);
                 }
-                //System.out.println();
+                System.out.println();
             }
         } catch (IOException FileNotFoundException) {
 

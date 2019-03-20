@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -26,7 +25,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.group10.msa.MAS;
 import com.group10.msa.MapObjects.Agent;
 import com.group10.msa.MapObjects.Map;
-import com.group10.msa.MapObjects.MapObject;
 import com.group10.msa.MapObjects.TargetArea;
 
 import static com.group10.msa.MapObjects.MapObject.MapType.Target;
