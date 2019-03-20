@@ -53,8 +53,6 @@ public class GameScreen implements Screen{
 	public int[][] world;
 	private ShapeRenderer shapeRenderer = new ShapeRenderer();
 	private ArrayList<Agent> agents = new ArrayList<Agent>();
-	//private Agent agent1;
-	//private Agent agent2;
 	private TargetArea target1;
 	private TargetArea target2;
 	private int frameRate = 0;
@@ -117,7 +115,6 @@ public class GameScreen implements Screen{
 						layer.setCell(x, y, cell);
 					}
 				}
-				//layer.setOpacity(0.f);
 				layers.add(layer);
 			Agent agent1 = new Agent(400,400, (float)((0*Math.PI/4)),world);
 			Agent agent2 = new Agent(200,200, 0, world);
@@ -127,9 +124,6 @@ public class GameScreen implements Screen{
             Vector2 v2 = new Vector2(400,400);
             target1 = new TargetArea(Target, v1);
             target2 = new TargetArea(Target, v2);
-            //Texture agent = new Texture(Gdx.files.internal("data/CropAgent.jpg"));
-            //TextureRegion tagent = new TextureRegion(agent,10,10);
-            //Sprite sprite = new Sprite(tagent);
 
 		}
 
@@ -149,12 +143,10 @@ public class GameScreen implements Screen{
         // tell the camera to update its matrices.
         //camera.position.set(sprite.getX(), sprite.getY(), 0);
         camera.update();
-
+        //System.out.println("FPS" +  Gdx.graphics.getFramesPerSecond());
         // tell the SpriteBatch to render in the
         // coordinate system specified by the camera.
         game.batch.setProjectionMatrix(camera.combined);
-
-
 		if (Gdx.input.isTouched()) {
 			game.setScreen(new MenuScreen(game));
 			dispose();
@@ -164,19 +156,22 @@ public class GameScreen implements Screen{
 
 		renderer.setView(camera);
 		renderer.render();
-
+        batch.setProjectionMatrix(camera.combined);
+        batch.begin();
+        batch.setProjectionMatrix(camera.combined);
         for(Agent agent: agents) {
-            batch.setProjectionMatrix(camera.combined);
-            batch.begin();
-            batch.setProjectionMatrix(camera.combined);
             agent.swerveTo(target1);
+            agent.move();
             agent.sprite.translate(-agent.sprite.getX() + agent.getX(), -agent.sprite.getY() + agent.getY());
-
             agent.sprite.draw(batch);
-            batch.end();
-
+            for(Agent otherAgents : agents){
+                if(agent != otherAgents && radiusDetection(agent, otherAgents)){
+                    float noise = agent.normalNoiseDetection(otherAgents.getDirection());
+                    System.out.println("NOIIIIISE " + noise);
+                }
+            }
         }
-
+        batch.end();
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -185,24 +180,20 @@ public class GameScreen implements Screen{
         for (Agent agent:agents) {
             shapeRenderer.setColor(new Color(1,1,1,0.5f));
             float[][] vision = agent.vision();
-            System.out.printf(" %s %s%n", vision[0][0], vision[0][1]);
+            //System.out.printf(" %s %s%n", vision[0][0], vision[0][1]);
             //degrees not radians
             float start = (float) (Math.toDegrees(agent.getDirection()) - (22.5));
             shapeRenderer.arc(vision[0][0], vision[0][1], agent.visionDistance, start, 45f);
             shapeRenderer.setColor(1, 1, 1, 0.2f);
-            shapeRenderer.circle(vision[0][0], vision[0][1], 100);
+            //System.out.println( "SPEED " + agent.speed + " and thus the radius " + agent.audioRadius);
+            shapeRenderer.circle(vision[0][0], vision[0][1], agent.audioRadius);
             shapeRenderer.setColor(new Color(0, 0, 1, 1));
             ArrayList<float[]> points = agent.visionField(vision);
             for (float[] p : points)
                 shapeRenderer.point(p[0], p[1], 0);
         }
-
         shapeRenderer.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
-
-
-
-
     }
 
 
@@ -265,5 +256,15 @@ public class GameScreen implements Screen{
 	@Override
 	public void resume() {
 	}
+	public boolean radiusDetection(Agent a1, Agent a2){
+        float[] vector = {(a2.getX()-a1.getX()), (a2.getY()-a1.getY())};
+        float temp = (float) Math.sqrt(vector[0]*vector[0] + vector[1]*vector[1]);
+        if(temp <= a2.audioRadius) {
+            System.out.println("vec length " +  temp + " rad " + a2.audioRadius);
+            return true;
+        }
+        else return false;
+
+    }
 }
 

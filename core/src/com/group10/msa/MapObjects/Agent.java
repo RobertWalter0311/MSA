@@ -12,12 +12,13 @@ public class Agent {
     private float x;
     private float y;
     private float direction;
-    private boolean walking = true;
-    public float speed = 1.4f;
+    //private boolean walking = true;
+    public float speed;
     public float visionDistance = 150;
     public float visionDegree = (float)(Math.PI/4);
     private int[][] world;
     public Sprite sprite;
+    public float audioRadius = 0;
 
     public Agent(float xStart, float yStart, float startDir,int[][] world){
         this.x = xStart;
@@ -27,38 +28,17 @@ public class Agent {
         Texture agent = new Texture(Gdx.files.internal("data/CropAgent.jpg"));
         TextureRegion tagent = new TextureRegion(agent,10,10);
         this.sprite = new Sprite(tagent);
+        speed = 0;
     }
 
     //calculates x and y components needed to move (potentially diagonally) at 1.4 metres a second
-    public void move(float speed){
-        this.speed = speed;
-        System.out.println(" x " + x + " y " + y);
+    public void move(){
+        setAudioRadius();
+        //System.out.println(" x " + x + " y " + y);
         if( x > 790 || x < 0 || y > 790 || y < 0)
             direction *= Math.PI; // to be deleted, just for testing
-        if(speed == metresToCoord((float)1.4)){
-            walking = true;
-        }
-        else{
-            walking = false;
-        }
-        /*if(direction < Math.PI/2){
-            x += speed*Math.sin(direction);
-            y += speed*Math.cos(direction);
-        }
-        if(direction >= Math.PI/2 && direction < Math.PI){
-            x += speed*Math.cos(direction - Math.PI/2);
-            y -= speed*Math.sin(direction - Math.PI/2);
-        }
-        if(direction >= Math.PI && direction < (3*Math.PI)/2){
-            x -= speed*Math.sin(direction - Math.PI);
-            y -= speed*Math.cos(direction - Math.PI);
-        }
-        if(direction >= (3*Math.PI)/2){
-            x -= speed*Math.cos(direction - (3*Math.PI)/2);
-            y += speed*Math.sin(direction - (3*Math.PI)/2);
-        }*/
-        x += speed*Math.cos(direction);
-        y+= speed*Math.sin(direction);
+        x += metresToCoord(speed)*Math.cos(direction);
+        y+= metresToCoord(speed)*Math.sin(direction);
     }
 
     //turns at PI/60 radians every frame
@@ -66,33 +46,15 @@ public class Agent {
     public void turn(float newDir){
         if(direction != newDir){
             float turnSpeed = (float)(Math.PI / 60);
-            if(walking == true){
+            if(speed == 1.4f){
                 turnSpeed = (float)(Math.PI / 60);
             }
             else{
                 turnSpeed = (float)((1f/18f)*(Math.PI / 60f));
-                System.out.println(turnSpeed);
             }
             if(Math.abs(direction-newDir) > turnSpeed){
-                if(newDir < direction){
-                    /*if(Math.abs(direction-newDir) > Math.PI) {
-                        direction += turnSpeed;
-                    }
-                    else{
-                        direction -= turnSpeed;
-                    }*/
-                    direction -= turnSpeed;
-                }
-                else if(direction < newDir){
-                    /*if(Math.abs(direction-newDir) > Math.PI) {
-                        direction -= turnSpeed;
-                    }
-                    else{
-                        direction += turnSpeed;
-                    }*/
-                    direction += turnSpeed;
-                }
-
+                if(newDir < direction) direction -= turnSpeed;
+                else if(direction < newDir) direction += turnSpeed;
             }
             else{
                 direction = newDir;
@@ -107,6 +69,7 @@ public class Agent {
     }
     //experimental, moves straight to a target area
     public void headTo(MapObject object){
+        speed = metresToCoord(1.4f);
         float objectX = object.getPos().x;
         float objectY = object.getPos().y;
         if(direction != getAngle(object)) {
@@ -115,45 +78,27 @@ public class Agent {
 
         else{
             if(Math.abs(x-objectX) > 1 || Math.abs(y-objectY) > 1) {
-
-                move(metresToCoord(1.4f));
+                speed = 0;
             }
         }
 
     }
 
     public void swerveTo(MapObject object){
+        speed = 1.4f;
         float objectX = object.getPos().x;
         float objectY = object.getPos().y;
         if(direction != getAngle(object)) {
             turn(getAngle(object));
-            System.out.println(getAngle(object));
         }
-        System.out.println(" OIOI " + Math.abs(x-objectX) + " " + Math.abs(y-objectY));
-        if(Math.abs(x-objectX) > 1|| Math.abs(y-objectY) > 1 ) {
-            System.out.println("HERE");
-            move(metresToCoord(1.4f));
+        if(Math.abs(x-objectX) < 1&& Math.abs(y-objectY) <1 ) {
+            speed = 0;
         }
 
 
     }
     //finds angle of location relative to agent
     public float getAngle(MapObject object) {
-        /*if(object.getPos().x >= x && object.getPos().y >= y) {
-            return (float) (Math.atan((object.getPos().x - x) / (object.getPos().y - y)));
-        }
-        else if(object.getPos().x >= x && object.getPos().y <= y){
-            return (float) (Math.PI/2f + Math.atan((-object.getPos().y + y) / (object.getPos().x - x)));
-        }
-        else if(object.getPos().x <= x && object.getPos().y <= y){
-            return (float) (Math.PI + Math.atan((-object.getPos().x + x) / (-object.getPos().y + y)));
-        }
-        else if(object.getPos().x <= x && object.getPos().y >= y){
-            return (float) ((3f/2f)*Math.PI + Math.atan((object.getPos().y - y) / (-object.getPos().x + x)));
-        }
-        else {
-            return 0;
-        }*/
         float[] obj = {(object.getPos().x-x), (object.getPos().y-y)};
         float temp = (float) Math.sqrt(obj[0]*obj[0] + obj[1]*obj[1]);
         obj[0] = obj[0]/temp;
@@ -188,8 +133,7 @@ public class Agent {
         return  metres;
     }
     public float metresToCoord(float metres){
-        float coord = (float)20*metres;
-        return  metres;
+        return (float)20*metres/Gdx.graphics.getFramesPerSecond();
     }
 
     public float[][] vision(){
@@ -203,9 +147,6 @@ public class Agent {
         // last point
         vision[2][0] = (float)(visionDistance*Math.cos(-(visionDegree/2)+direction)+x+5);
         vision[2][1] = (float)(visionDistance*Math.sin(-(visionDegree/2)+direction)+y+5);
-        for(float[] i : vision){
-            System.out.println(" " + i[0] + " " + i[1]);
-        }
        // visionField(vision);
 
         return vision;
@@ -223,7 +164,7 @@ public class Agent {
         ArrayList<float[]> points = new ArrayList<float[]>();
         maxX += 1;
         maxY +=1;
-        System.out.println("minx "+ minX + " miny " + minY + " maxx " + maxX + " maxy " +maxY );
+        //System.out.println("minx "+ minX + " miny " + minY + " maxx " + maxX + " maxy " +maxY );
         //starting from the smallest
         int[][] agentsVision = new int[maxX-minX+1][maxY-minY+1];
         int count = 0;
@@ -245,7 +186,7 @@ public class Agent {
                     for(int k = 0; k < 10; k++){
                         for(int l = 0; l < 10; l++){
                             float[] p = {(((minX+i)*10)+k),(((minY+j)*10)+l)};
-                            if(isInVisionField(p, vision[0],vision[1], vision[2])){
+                            if(p[0]>=0 &&p[0] < 800 && p[1] >=0 && p[1] < 800 &&isInVisionField(p, vision[0],vision[1], vision[2])){
                                 agentsVision[i][j] = world[minX+i][minY+j];
                                 k = 10;
                                 l=10;
@@ -258,13 +199,13 @@ public class Agent {
             }
         }
         agentsVision[((int)vision[0][0]/10)-minX][((int)vision[0][1]/10)-minY] = 9;
-        System.out.println("Direction" + direction);
+        /*System.out.println("Direction" + direction);
         for(int i = 0; i < agentsVision.length;i++){
             for(int j = 0; j < agentsVision[0].length; j++){
                 System.out.print(agentsVision[i][j]);
             }
             System.out.println();
-        }
+        }*/
         return points;
     }
     public boolean isInVisionField(float[] point, float[]a,float[]b, float[] c){
@@ -293,5 +234,30 @@ public class Agent {
         return false;
     }
 
+    public void setAudioRadius(){
+        if(speed < 0.5) audioRadius = 20;
+        else if (speed < 1) audioRadius = 60;
+        else if (speed < 2) audioRadius  = 100;
+        else audioRadius = 200;
+    }
+    public float normalNoiseDetection(float direction){
+        float probab = (float) Math.random();
+        if(probab < 0.6827 ){
+            float rando = (float) (-10 + (Math.random() * ((10 - (-10)) + 1)));
+            return direction +(float)(Math.toRadians(rando));
+        }
+        else if (probab < 0.9545){
+            float rando = (float) (-20+ (Math.random() * ((20 - (20)) + 1)));
+            return direction +(float)(Math.toRadians(rando));
+        }
+        else if (probab < 0.9973){
+            float rando = (float) (-30 + (Math.random() * ((30 - (-30)) + 1)));
+            return direction +(float)(Math.toRadians(rando));
+        }
+        else{
+            float rando = (float) (-40 + (Math.random() * ((40 - (-40)) + 1)));
+            return direction +(float)(Math.toRadians(rando));
+        }
+    }
 
 }
