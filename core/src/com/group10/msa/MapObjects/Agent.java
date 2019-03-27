@@ -35,8 +35,8 @@ public class Agent {
     public void move(){
         setAudioRadius();
         //System.out.println(" x " + x + " y " + y);
-       // if( x > 790 || x < 0 || y > 790 || y < 0)
-         //   direction *= Math.PI; // to be deleted, just for testing
+        //if( x > 790 || x < 0 || y > 790 || y < 0)
+          //direction *= Math.PI; // to be deleted, just for testing
         int tempx = (int)(x+5+(metresToCoord(speed)*Math.cos(direction)));
         int tempy = (int)(y+5+(metresToCoord(speed)*Math.sin(direction)));
         tempx *=0.1;
@@ -76,7 +76,7 @@ public class Agent {
             }
         }
 
-               if(direction > 2* Math.PI){
+        if(direction > 2* Math.PI){
             direction -= 2*Math.PI;
 
         }
@@ -86,16 +86,15 @@ public class Agent {
         }
     }
     //experimental, moves straight to a target area
-    public void headTo(MapObject object){
+    public void headTo(float objx, float objy){
         speed = metresToCoord(1.4f);
-        float objectX = object.getPos().x;
-        float objectY = object.getPos().y;
-        if(direction != getAngle(object)) {
-            turn(getAngle(object));
+
+        if(direction != getAngle(objx,objy)) {
+            turn(getAngle(objx,objy));
         }
 
         else{
-            if(Math.abs(x-objectX) > 1 || Math.abs(y-objectY) > 1) {
+            if(Math.abs(x-objx) < 1 && Math.abs(y-objy) < 1) {
                 speed = 0;
             }
         }
@@ -218,13 +217,14 @@ public class Agent {
             }
         }
         agentsVision[((int)vision[0][0]/10)-minX][((int)vision[0][1]/10)-minY] = 9;
-        /*System.out.println("Direction" + direction);
-        for(int i = 0; i < agentsVision.length;i++){
+        //System.out.println("Direction" + direction);
+        /*for(int i = 0; i < agentsVision.length;i++){
             for(int j = 0; j < agentsVision[0].length; j++){
                 System.out.print(agentsVision[i][j]);
             }
             System.out.println();
         }*/
+        collisionDetection(agentsVision,minX,minY);
         return points;
     }
     public boolean isInVisionField(float[] point, float[]a,float[]b, float[] c){
@@ -288,12 +288,35 @@ public class Agent {
         obj[1] = obj[1]/temp;
 
         //horizontal line
-        float[] us={(x+5) - x,y -y};
+        float[] us={1,0};//{(x+5) - x,y -y};
         float temo = (float) Math.sqrt(us[0]*us[0] + us[1]*us[1]);
         us[0] = us[0]/temo;
         us[1] = us[1]/temo;
 
         float angle= (float)Math.acos((obj[0]*us[0])+(obj[1]*us[1]));
+        if(noisy < y) angle = (float) (2*Math.PI) - angle;
+        //System.out.println(angle);
         return angle;
     }
+
+    public void collisionDetection(int[][] agentsVision, int minX, int minY){
+        for(int i = 0; i < agentsVision.length; i++){
+            for (int j = 0; j < agentsVision[0].length; j++){
+                if( agentsVision[i][j] == 8){
+                    if(getAngle((minX+i)*10,(minY+j)*10)== direction ){
+                        //System.out.println("i'm going to hit that wall");
+                    }
+                }
+                if (agentsVision[i][j] == 1){
+                    turn(getAngle((minX+i)*10, (minY+j)* 10));
+                }
+            }
+        }
+    }
+    public void plan (){
+        move();
+        //
+        if(world[(int)x/10][(int)y/10] == 1) speed = 0;
+    }
+
 }

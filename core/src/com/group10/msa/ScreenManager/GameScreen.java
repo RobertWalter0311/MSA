@@ -104,7 +104,7 @@ public class GameScreen implements Screen{
 			for (int x = 0; x < 80; x++) {
 				for (int y = 79; y >= 0; y--) {
 					Cell cell = new TiledMapTileLayer.Cell();
-					if(world[x][y] == 4){
+					if(world[x][y] == 1){
 						cell.setTile(new StaticTiledMapTile(t2));}
 						else if (world[x][y] == 8)
 						    cell.setTile(new StaticTiledMapTile(twall));
@@ -116,7 +116,7 @@ public class GameScreen implements Screen{
 					}
 				}
 				layers.add(layer);
-			Agent agent1 = new Agent(345,300, (float)(Math.PI),world);
+			Agent agent1 = new Agent(330,300, (float)(Math.PI),world);
 			Agent agent2 = new Agent(430,200, (float)(Math.PI/2), world);
 			agents.add(agent1);
 			agents.add(agent2);
@@ -165,7 +165,7 @@ public class GameScreen implements Screen{
             //agent.speed = 1.4f;
             batch.begin();
             batch.setProjectionMatrix(camera.combined);
-            agent.move();
+            agent.plan();
             agent.sprite.translate(-agent.sprite.getX() + agent.getX(), -agent.sprite.getY() + agent.getY());
             agent.sprite.draw(batch);
             batch.end();
@@ -296,6 +296,7 @@ public class GameScreen implements Screen{
             //w[50][i] = 8;
             //w[i][50] = 8;
         }
+        w[3][26] = 1;
         return w;
     }
 }
