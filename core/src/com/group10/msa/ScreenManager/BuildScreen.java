@@ -255,9 +255,10 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
             terrainSelect = MapType.Tower;
         else if (keycode== Input.Keys.NUM_7)
             terrainSelect = MapType.Tree;
-        else if (keycode== Input.Keys.NUM_6)
+        else if (keycode== Input.Keys.NUM_9)
             terrainSelect = MapType.Water;
         return false;
+        
 
     }
 
