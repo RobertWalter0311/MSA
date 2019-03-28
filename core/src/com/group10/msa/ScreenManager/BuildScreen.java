@@ -10,20 +10,19 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.group10.msa.MAS;
 import com.group10.msa.MapObjects.Map;
 import com.group10.msa.MapObjects.MapObject;
 import com.group10.msa.MapObjects.MapObject.MapType;
-
-import static com.group10.msa.ScreenManager.BuildAssets.skin;
 
 
 public class BuildScreen extends ApplicationAdapter implements InputProcessor,Screen{
@@ -97,6 +96,9 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
 
                 for (int i = 0; i<arrayObject.length; i++){
                     for (int j = 0; j<arrayObject[0].length; j++){
+                        if(arrayObject[i][j].getType() == MapType.Target) {
+                            System.out.println(" target detected");
+                        }
 
                         if(arrayObject[i][j].getType()== MapType.Null)
                             cntr++;
@@ -239,21 +241,21 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
     @Override
     public boolean keyUp(int keycode){
 
-        if (keycode== Input.Keys.NUMPAD_1)
+        if (keycode== Input.Keys.NUM_1)
             terrainSelect = MapType.Grass;
-        else if (keycode== Input.Keys.NUMPAD_2)
+        else if (keycode== Input.Keys.NUM_2)
             terrainSelect = MapType.Dirt;
-        else if (keycode== Input.Keys.NUMPAD_3)
+        else if (keycode== Input.Keys.NUM_3)
             terrainSelect = MapType.Sand;
-        else if (keycode== Input.Keys.NUMPAD_4)
+        else if (keycode== Input.Keys.NUM_4)
             terrainSelect = MapType.Target;
-        else if (keycode== Input.Keys.NUMPAD_5)
+        else if (keycode== Input.Keys.NUM_5)
             terrainSelect = MapType.Wall;
-        else if (keycode== Input.Keys.NUMPAD_9)
+        else if (keycode== Input.Keys.NUM_9)
             terrainSelect = MapType.Tower;
-        else if (keycode== Input.Keys.NUMPAD_7)
+        else if (keycode== Input.Keys.NUM_7)
             terrainSelect = MapType.Tree;
-        else if (keycode== Input.Keys.NUMPAD_8)
+        else if (keycode== Input.Keys.NUM_8)
             terrainSelect = MapType.Water;
         return false;
 
@@ -296,6 +298,7 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
 
                 Rectangle rec = new Rectangle(arrayObject[i][j].getPos().x,arrayObject[i][j].getPos().y,16,16);
                 if(rec.contains(mouse.x,mouse.y)){
+                    System.out.println(targetPlaced);
                     if(terrainSelect == MapType.Target && !targetPlaced){// target placing
                     target = new MapObject(terrainSelect, new Vector2(i*16 , 1080 - 16*j));
                     targetPlaced = true;
@@ -304,6 +307,11 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
                         arrayObject[i][j]= new MapObject(terrainSelect,new Vector2(i*16,1080-16*j));
                     }
                 }
+            }
+        }
+        for(int i = 0; i < arrayObject.length; i++){
+            for(int j = 0; j < arrayObject[0].length; j++){
+                if( arrayObject[i][j].getType() == MapType.Target) System.out.println("TARGET");
             }
         }
     }
