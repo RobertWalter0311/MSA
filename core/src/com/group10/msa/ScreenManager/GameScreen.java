@@ -41,9 +41,14 @@ public class GameScreen implements Screen{
 	private TiledMapRenderer renderer;
 	private OrthographicCamera camera;
 	private AssetManager assetManager;
-	private Texture tiles;
-	private Texture tiles2;
+	private Texture grass;
+	private Texture dirt;
+    private Texture target;
     private Texture wall;
+    private Texture sand;
+    private Texture water;
+    private Texture tower;
+    private Texture tree;
     //private Texture agent;
 	private Texture texture;
 	private BitmapFont font;
@@ -64,10 +69,13 @@ public class GameScreen implements Screen{
         this.game = game;
 
         //load in textures
-        tiles = new Texture(Gdx.files.internal("data/Grass.png"));
-        tiles2 = new Texture(Gdx.files.internal("data/Dirt.png"));
+        target = new Texture(Gdx.files.internal("data/Target.jpg"));
+        grass = new Texture(Gdx.files.internal("data/Grass.png"));
+        dirt = new Texture(Gdx.files.internal("data/Dirt.png"));
         wall = new Texture(Gdx.files.internal("data/Wall.jpg"));
-
+        sand = new Texture(Gdx.files.internal("data/sand.png"));
+        tree = new Texture(Gdx.files.internal("data/Tree.png"));
+        tower = new Texture(Gdx.files.internal("data/Tower.jpg"));
 
 
 
@@ -95,22 +103,41 @@ public class GameScreen implements Screen{
 			//Comment the line below to randomize again
 			//world = mapA.getMapArray();
 
-			TextureRegion t1 = new TextureRegion(tiles, 10,10);
-			TextureRegion t2 = new TextureRegion(tiles2, 10,10);
-			TextureRegion twall = new TextureRegion(wall, 10,10);
-			map = new TiledMap();
+			TextureRegion tGrass = new TextureRegion(grass, 10,10);
+			TextureRegion tDirt = new TextureRegion(dirt, 10,10);
+			TextureRegion tWall = new TextureRegion(wall, 10,10);
+            TextureRegion tTarget = new TextureRegion(target, 10,10);
+            TextureRegion tSand = new TextureRegion(sand, 10,10);
+            TextureRegion tTower = new TextureRegion(tower, 10,10);
+            TextureRegion tTree = new TextureRegion(tree, 10,10);
+
+
+            map = new TiledMap();
 			MapLayers layers = map.getLayers();
 			TiledMapTileLayer layer = new TiledMapTileLayer(800, 800, 10, 10);
 			for (int x = 0; x < 80; x++) {
 				for (int y = 79; y >= 0; y--) {
 					Cell cell = new TiledMapTileLayer.Cell();
 					if(world[x][y] == 1){
-						cell.setTile(new StaticTiledMapTile(t2));}
-						else if (world[x][y] == 8)
-						    cell.setTile(new StaticTiledMapTile(twall));
+						cell.setTile(new StaticTiledMapTile(tTarget));}
+					else if (world[x][y] == 2) {
+                        cell.setTile(new StaticTiledMapTile(tGrass));
+                    }
+                    else if (world[x][y] == 3) {
+                        cell.setTile(new StaticTiledMapTile(tDirt));
+                    }
+                    else if (world[x][y] == 4) {
+                        cell.setTile(new StaticTiledMapTile(tSand));
+                    }
+                    else if (world[x][y] == 7) {
+                        cell.setTile(new StaticTiledMapTile(tTower));
+                    }
+                    else if (world[x][y] == 8) {
+                        cell.setTile(new StaticTiledMapTile(tTree));
+                    }
 						else {
 							//System.out.println("im here fam");
-							cell.setTile(new StaticTiledMapTile(t1));
+							cell.setTile(new StaticTiledMapTile(tDirt));
 						}
 						layer.setCell(x, y, cell);
 					}

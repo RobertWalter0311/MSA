@@ -22,7 +22,6 @@ import com.group10.msa.MAS;
 import com.group10.msa.MapObjects.Map;
 import com.group10.msa.MapObjects.MapObject;
 import com.group10.msa.MapObjects.MapObject.MapType;
-import javafx.scene.Scene;
 
 import static com.group10.msa.ScreenManager.BuildAssets.skin;
 
