@@ -47,17 +47,17 @@ public class Map {
 //        }
         int[][] intArray = new int[80][80];
         int j = 0;
-        int u = 0;
+        int u = 79;
         while ((line = reader.readLine()) != null) {
             if(line.contains(",")){
                 for(int i = 0; i<line.length(); i++) {
                     if (line.charAt(i) != ',') {
                         array += line.charAt(i);
                         //System.out.println("u " + u + " j " + j + " i " + i);
-                        intArray[u][j] = Character.getNumericValue(line.charAt(i));
-                        u++;
-                        if(u == 80) {
-                            u= 0;
+                        intArray[j][u] = Character.getNumericValue(line.charAt(i));
+                        u--;
+                        if(u == -1) {
+                            u= 79;
                             j++;
                         }
                        // if(line.charAt(i) == '6'){
@@ -66,7 +66,7 @@ public class Map {
                     }
 
                 }
-                u = 0;
+                u = 79;
                 j++;
                 array += '\n';
             }
