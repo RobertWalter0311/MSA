@@ -121,13 +121,13 @@ public class Map {
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Water){
                     finalMap += "5";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Wall){
-                    finalMap += "6";
+                    finalMap += "9";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Tree){
                     finalMap += "7";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Tower){
                     finalMap += "8";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Target){
-                    finalMap += "9";
+                    finalMap += "1";
                 }
             }
 
