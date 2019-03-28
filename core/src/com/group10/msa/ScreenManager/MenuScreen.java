@@ -88,24 +88,20 @@ public class MenuScreen implements Screen {
                 game.setScreen(new GameScreen(game));
             }
         });
+
         mapBuild.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new GameScreen(game));
+                game.setScreen(new BuildScreen());
             }
         });
-       // mapBuild.addListener(new ChangeListener() {
-          //  @Override
-           // public void changed(ChangeEvent event, Actor actor) {
-             //   game.setScreen(new BuildScreen(game));
-           // }
-        //});
         exit.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.exit();
             }
         });
+
 
     }
 

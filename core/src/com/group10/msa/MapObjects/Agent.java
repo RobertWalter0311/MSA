@@ -18,7 +18,7 @@ public class Agent {
     public float visionDegree = (float)(Math.PI/4);
     private int[][] world;
     public Sprite sprite;
-    public float audioRadius = 0;
+    public float audioRadius = 20;
 
     public Agent(float xStart, float yStart, float startDir,int[][] world){
         this.x = xStart;
@@ -35,10 +35,25 @@ public class Agent {
     public void move(){
         setAudioRadius();
         //System.out.println(" x " + x + " y " + y);
-        if( x > 790 || x < 0 || y > 790 || y < 0)
-            direction *= Math.PI; // to be deleted, just for testing
-        x += metresToCoord(speed)*Math.cos(direction);
-        y+= metresToCoord(speed)*Math.sin(direction);
+        //if( x > 790 || x < 0 || y > 790 || y < 0)
+          //direction *= Math.PI; // to be deleted, just for testing
+        int tempx = (int)(x+5+(metresToCoord(speed)*Math.cos(direction)));
+        int tempy = (int)(y+5+(metresToCoord(speed)*Math.sin(direction)));
+        tempx *=0.1;
+        tempy *= 0.1;
+
+        if(world[tempx][tempy] == 8) {
+            System.out.println("TUUUURRRRN" + direction);
+
+            turn ((float)Math.PI+ direction);
+        }
+        else{
+            speed= 1.4f;
+            x += metresToCoord(speed)*Math.cos(direction);
+            y+= metresToCoord(speed)*Math.sin(direction);
+        }
+
+
     }
 
     //turns at PI/60 radians every frame
@@ -46,7 +61,7 @@ public class Agent {
     public void turn(float newDir){
         if(direction != newDir){
             float turnSpeed = (float)(Math.PI / 60);
-            if(speed == 1.4f){
+            if(speed <= 1.4f){
                 turnSpeed = (float)(Math.PI / 60);
             }
             else{
@@ -60,24 +75,26 @@ public class Agent {
                 direction = newDir;
             }
         }
+
         if(direction > 2* Math.PI){
             direction -= 2*Math.PI;
+
         }
         else if(direction < 0){
             direction += 2* Math.PI;
+
         }
     }
     //experimental, moves straight to a target area
-    public void headTo(MapObject object){
+    public void headTo(float objx, float objy){
         speed = metresToCoord(1.4f);
-        float objectX = object.getPos().x;
-        float objectY = object.getPos().y;
-        if(direction != getAngle(object)) {
-            turn(getAngle(object));
+
+        if(direction != getAngle(objx,objy)) {
+            turn(getAngle(objx,objy));
         }
 
         else{
-            if(Math.abs(x-objectX) > 1 || Math.abs(y-objectY) > 1) {
+            if(Math.abs(x-objx) < 1 && Math.abs(y-objy) < 1) {
                 speed = 0;
             }
         }
@@ -85,10 +102,11 @@ public class Agent {
     }
 
     public void swerveTo(MapObject object){
-        speed = 1.4f;
+
         float objectX = object.getPos().x;
         float objectY = object.getPos().y;
         if(direction != getAngle(object)) {
+            //speed = 1.4f;
             turn(getAngle(object));
         }
         if(Math.abs(x-objectX) < 1&& Math.abs(y-objectY) <1 ) {
@@ -199,13 +217,14 @@ public class Agent {
             }
         }
         agentsVision[((int)vision[0][0]/10)-minX][((int)vision[0][1]/10)-minY] = 9;
-        /*System.out.println("Direction" + direction);
-        for(int i = 0; i < agentsVision.length;i++){
+        //System.out.println("Direction" + direction);
+        /*for(int i = 0; i < agentsVision.length;i++){
             for(int j = 0; j < agentsVision[0].length; j++){
                 System.out.print(agentsVision[i][j]);
             }
             System.out.println();
         }*/
+        collisionDetection(agentsVision,minX,minY);
         return points;
     }
     public boolean isInVisionField(float[] point, float[]a,float[]b, float[] c){
@@ -240,24 +259,64 @@ public class Agent {
         else if (speed < 2) audioRadius  = 100;
         else audioRadius = 200;
     }
-    public float normalNoiseDetection(float direction){
+    public float normalNoiseDetection(float dx,float dy){
+        float direc = getAngle(dx,dy);
         float probab = (float) Math.random();
         if(probab < 0.6827 ){
             float rando = (float) (-10 + (Math.random() * ((10 - (-10)) + 1)));
-            return direction +(float)(Math.toRadians(rando));
+            System.out.println("RESULT " +(direc +(float)(Math.toRadians(rando))));
+            return direc +(float)(Math.toRadians(rando));
         }
         else if (probab < 0.9545){
-            float rando = (float) (-20+ (Math.random() * ((20 - (20)) + 1)));
+            float rando = (float) (-20+ (Math.random() * ((20 - (-20)) + 1)));
             return direction +(float)(Math.toRadians(rando));
         }
         else if (probab < 0.9973){
             float rando = (float) (-30 + (Math.random() * ((30 - (-30)) + 1)));
-            return direction +(float)(Math.toRadians(rando));
+            return direc +(float)(Math.toRadians(rando));
         }
         else{
             float rando = (float) (-40 + (Math.random() * ((40 - (-40)) + 1)));
-            return direction +(float)(Math.toRadians(rando));
+            return direc +(float)(Math.toRadians(rando));
         }
+    }
+
+    public float getAngle(float noisx, float noisy) {
+        float[] obj = {(noisx-x), (noisy-y)};
+        float temp = (float) Math.sqrt(obj[0]*obj[0] + obj[1]*obj[1]);
+        obj[0] = obj[0]/temp;
+        obj[1] = obj[1]/temp;
+
+        //horizontal line
+        float[] us={1,0};//{(x+5) - x,y -y};
+        float temo = (float) Math.sqrt(us[0]*us[0] + us[1]*us[1]);
+        us[0] = us[0]/temo;
+        us[1] = us[1]/temo;
+
+        float angle= (float)Math.acos((obj[0]*us[0])+(obj[1]*us[1]));
+        if(noisy < y) angle = (float) (2*Math.PI) - angle;
+        //System.out.println(angle);
+        return angle;
+    }
+
+    public void collisionDetection(int[][] agentsVision, int minX, int minY){
+        for(int i = 0; i < agentsVision.length; i++){
+            for (int j = 0; j < agentsVision[0].length; j++){
+                if( agentsVision[i][j] == 8){
+                    if(getAngle((minX+i)*10,(minY+j)*10)== direction ){
+                        //System.out.println("i'm going to hit that wall");
+                    }
+                }
+                if (agentsVision[i][j] == 1){
+                    turn(getAngle((minX+i)*10, (minY+j)* 10));
+                }
+            }
+        }
+    }
+    public void plan (){
+        move();
+        //
+        if(world[(int)x/10][(int)y/10] == 1) speed = 0;
     }
 
 }

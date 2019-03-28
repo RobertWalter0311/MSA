@@ -7,9 +7,9 @@ import com.group10.msa.Atlas;
 public class DesktopLauncher {
 	public static void main(String[] args) {
 		LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
-		cfg.title = "MASS";
-		cfg.width = 800;
-		cfg.height = 480;
+		cfg.title = "MAS";
+		cfg.width = 1800;
+		cfg.height = 1080;
 
 		new LwjglApplication(new Atlas(), cfg);
 	}
