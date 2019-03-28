@@ -69,7 +69,6 @@ public class MenuScreen implements Screen {
         table.setFillParent(true);
         //table.setDebug(true);
         stage.addActor(table);
-
         skin = new Skin(Gdx.files.internal("skin/neon-ui.json"));
 
         startSim = new TextButton("Start Simulation", skin);

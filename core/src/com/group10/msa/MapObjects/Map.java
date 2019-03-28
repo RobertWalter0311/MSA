@@ -108,25 +108,35 @@ public class Map {
 
         String finalMap = "";
 
+        int cntr = 0;
+
         for(int i=0; i<arrayObject.length; i++) {
             for (int j = 0; j < arrayObject[0].length; j++) {
 
                 if(arrayObject[i][j].getType() == MapObject.MapType.Grass){
                     finalMap += "2"+",";
+                    cntr++;
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Dirt){
                     finalMap += "3"+",";
+                    cntr++;
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Sand){
                     finalMap += "4"+",";
+                    cntr++;
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Water){
                     finalMap += "5"+",";
+                    cntr++;
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Wall){
                     finalMap += "9"+",";
+                    cntr++;
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Tree){
                     finalMap += "7"+",";
+                    cntr++;
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Tower){
                     finalMap += "8"+",";
+                    cntr++;
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Target){
                     finalMap += "1"+",";
+                    cntr++;
                 }
             }
 
