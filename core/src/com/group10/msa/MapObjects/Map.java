@@ -113,21 +113,21 @@ public class Map {
             for (int j = 0; j < arrayObject[0].length; j++) {
 
                 if(arrayObject[i][j].getType() == MapObject.MapType.Grass){
-                    finalMap += "2";
+                    finalMap += "2"+",";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Dirt){
-                    finalMap += "3";
+                    finalMap += "3"+",";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Sand){
-                    finalMap += "4";
+                    finalMap += "4"+",";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Water){
-                    finalMap += "5";
+                    finalMap += "5"+",";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Wall){
-                    finalMap += "9";
+                    finalMap += "9"+",";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Tree){
-                    finalMap += "7";
+                    finalMap += "7"+",";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Tower){
-                    finalMap += "8";
+                    finalMap += "8"+",";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Target){
-                    finalMap += "1";
+                    finalMap += "1"+",";
                 }
             }
 
