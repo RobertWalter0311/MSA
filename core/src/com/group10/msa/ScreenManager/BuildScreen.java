@@ -87,7 +87,7 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
         dialog.text("Be sure that the target is placed and all boxes are filled");
         dialog.button("OK",true);
 
-       /* TextButton save = new TextButton("Save Map",skin);
+        TextButton save = new TextButton("Save Map",skin);
         save.addListener(new InputListener(){
             public boolean touchDown(InputEvent event,float x, float y,int pointer,int button){
 
@@ -105,7 +105,7 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
                 else dialog.show(stage);
                 return  true;
             }
-        });*/
+        });
 
         TextButton resetTargetArea = new TextButton("Reset Target Area",skin);
         resetTargetArea.addListener(new InputListener(){
@@ -120,7 +120,7 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
 
         table.add(resetTargetArea);
         table.row();
-        //table.add(save);
+        table.add(save);
         table.row();
 
 
