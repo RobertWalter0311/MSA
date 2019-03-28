@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -17,9 +18,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.group10.msa.MAS;
 import com.group10.msa.MapObjects.Map;
 import com.group10.msa.MapObjects.MapObject;
 import com.group10.msa.MapObjects.MapObject.MapType;
@@ -27,7 +30,7 @@ import com.group10.msa.MapObjects.MapObject.MapType;
 
 public class BuildScreen extends ApplicationAdapter implements InputProcessor,Screen{
 
-    //final MAS game;
+    final MAS game;
 
     SpriteBatch batch;
     OrthographicCamera cam;
@@ -47,8 +50,9 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
 
 
 
-    public BuildScreen() {
+    public BuildScreen(final MAS game) {
 
+        this.game = game;
 
 
         BuildAssets.load();
@@ -119,12 +123,21 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
                 return true;
             }
         });
+        TextButton menu = new TextButton("Menu",skin);
+        menu.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new MenuScreen(game));
+            }
+        });
 
 
 
         table.add(resetTargetArea);
         table.row();
         table.add(save);
+        table.row();
+        table.add(menu);
         table.row();
 
 
