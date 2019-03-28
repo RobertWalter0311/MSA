@@ -1,19 +1,9 @@
 package com.group10.msa.MapObjects;
 
-import java.io.*;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.group10.msa.MapObjects.MapObject;
-import com.group10.msa.MapObjects.MapObject.MapType;
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Random;
+
+import java.io.*;
 
 
 
@@ -39,7 +29,7 @@ public class Map {
 
 
     public int[][] readFileArray() throws IOException {
-        File file = new File("C:\\Users\\Kit\\Documents\\Git\\MSA6\\core\\assets\\Data\\1wall.tmx");
+        File file = new File("C:\\Users\\Notebook\\git\\MSA\\MSA\\core\\assets\\MapInfo.txt");
         FileInputStream fileStream = new FileInputStream(file);
         InputStreamReader input = new InputStreamReader(fileStream);
         BufferedReader reader = new BufferedReader(input);
@@ -62,13 +52,17 @@ public class Map {
             if(line.contains(",")){
                 for(int i = 0; i<line.length(); i++) {
                     if (line.charAt(i) != ',') {
-
                         array += line.charAt(i);
+                        //System.out.println("u " + u + " j " + j + " i " + i);
                         intArray[u][j] = Character.getNumericValue(line.charAt(i));
                         u++;
-                        if(line.charAt(i) == '6'){
-                            i++;
+                        if(u == 80) {
+                            u= 0;
+                            j++;
                         }
+                       // if(line.charAt(i) == '6'){
+                         //   i++;
+                        //}
                     }
 
                 }
@@ -80,7 +74,12 @@ public class Map {
 
 
         }
-
+        /*for(int i = 0; i < intArray.length;i++){
+            for(int k = 0; k < intArray[0].length;k++){
+                System.out.print(intArray[i][k]);
+            }
+            System.out.println();
+        }*/
         //System.out.println(array);
         return intArray;
     }

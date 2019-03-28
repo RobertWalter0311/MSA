@@ -33,7 +33,7 @@ public class Agent {
 
     //calculates x and y components needed to move (potentially diagonally) at 1.4 metres a second
     public void move(){
-        setAudioRadius();
+        //setAudioRadius();
         //System.out.println(" x " + x + " y " + y);
         //if( x > 790 || x < 0 || y > 790 || y < 0)
           //direction *= Math.PI; // to be deleted, just for testing
@@ -42,7 +42,7 @@ public class Agent {
         tempx *=0.1;
         tempy *= 0.1;
 
-        if(world[tempx][tempy] == 8) {
+        if(world[tempx][tempy] == 9) {
             System.out.println("TUUUURRRRN" + direction);
 
             turn ((float)Math.PI+ direction);
@@ -302,9 +302,9 @@ public class Agent {
     public void collisionDetection(int[][] agentsVision, int minX, int minY){
         for(int i = 0; i < agentsVision.length; i++){
             for (int j = 0; j < agentsVision[0].length; j++){
-                if( agentsVision[i][j] == 8){
+                if( agentsVision[i][j] == 9){
                     if(getAngle((minX+i)*10,(minY+j)*10)== direction ){
-                        //System.out.println("i'm going to hit that wall");
+                        System.out.println("i'm going to hit that wall");
                     }
                 }
                 if (agentsVision[i][j] == 1){
@@ -314,9 +314,11 @@ public class Agent {
         }
     }
     public void plan (){
-        move();
-        //
         if(world[(int)x/10][(int)y/10] == 1) speed = 0;
+        else move();
+        setAudioRadius();
+        //
+
     }
 
 }

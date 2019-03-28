@@ -90,7 +90,7 @@ public class GameScreen implements Screen{
 		{
 			//
             Map mapA = new Map();
-			world = defaultWorld();//new int[80][80];
+			//world = defaultWorld();//new int[80][80];
 			/*for(int i = 0; i < world.length; i++){
 			    for(int j = 0; j < world[0].length; j++){
 			        double rando =  Math.random();
@@ -101,7 +101,7 @@ public class GameScreen implements Screen{
             }*/
 
 			//Comment the line below to randomize again
-			//world = mapA.getMapArray();
+			world = mapA.getMapArray();
 
 			TextureRegion tGrass = new TextureRegion(grass, 10,10);
 			TextureRegion tDirt = new TextureRegion(dirt, 10,10);
@@ -137,7 +137,7 @@ public class GameScreen implements Screen{
                     }
 						else {
 							//System.out.println("im here fam");
-							cell.setTile(new StaticTiledMapTile(tDirt));
+							cell.setTile(new StaticTiledMapTile(tWall));
 						}
 						layer.setCell(x, y, cell);
 					}
