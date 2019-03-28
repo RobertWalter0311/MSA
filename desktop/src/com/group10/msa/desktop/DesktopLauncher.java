@@ -2,7 +2,7 @@ package com.group10.msa.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.group10.msa.MAS;
+import com.group10.msa.Atlas;
 
 public class DesktopLauncher {
 	public static void main(String[] args) {
@@ -11,6 +11,6 @@ public class DesktopLauncher {
 		cfg.width = 800;
 		cfg.height = 480;
 
-		new LwjglApplication(new MAS(), cfg);
+		new LwjglApplication(new Atlas(), cfg);
 	}
 }
