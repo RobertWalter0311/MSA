@@ -2,6 +2,20 @@ package com.group10.msa.MapObjects;
 
 import java.io.*;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.group10.msa.MapObjects.MapObject;
+import com.group10.msa.MapObjects.MapObject.MapType;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Random;
+
+
 
 public class Map {
 
@@ -22,19 +36,6 @@ public class Map {
     public int[][] getMapArray(){
         return mapArray;
     }
-
-
-
-    /*static void createMap(MapObject[][] arrayObject, MapObject target){
-
-        //create the map txt file with the coordinates
-        mapTxt("MapInfo.txt", arrayObject,target);
-
-
-        //generate a texture map
-        pngMap("MapTexture.png", arrayObject);
-    }*/
-
 
 
     public int[][] readFileArray() throws IOException {
@@ -92,12 +93,117 @@ public class Map {
         float coord = (float)20*metres;
         return  metres;
     }
+
+    public static void createMap(MapObject[][] arrayObject, MapObject target){
+
+        //create the map txt file with the coordinates
+        mapTxt("MapInfo.txt", arrayObject,target);
+
+
+        //generate a texture map
+        //pngMap("MapTexture.png", arrayObject);
+    }
+    static void mapTxt(String filename, MapObject[][] arrayObject, MapObject target) {
+        //create the filemap
+        FileHandle file = Gdx.files.local(filename);
+
+        String finalMap = "";
+
+        for(int i=0; i<arrayObject.length; i++) {
+            for (int j = 0; j < arrayObject[0].length; j++) {
+
+                if(arrayObject[i][j].getType() == MapObject.MapType.Grass){
+                    finalMap += "2"+ ","+ (arrayObject[i][j].getPos().x+32) + ","+ (arrayObject[i][j].getPos().y+32) +";";
+                }else if(arrayObject[i][j].getType() == MapObject.MapType.Dirt){
+                    finalMap += "3"+ ","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+                }else if(arrayObject[i][j].getType() == MapObject.MapType.Sand){
+                    finalMap += "4"+","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+                }else if(arrayObject[i][j].getType() == MapObject.MapType.Water){
+                    finalMap += "5"+ ","+ "0" +","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+                }else if(arrayObject[i][j].getType() == MapObject.MapType.Wall){
+                    finalMap += "6"+ ","+ "0" +","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+                }else if(arrayObject[i][j].getType() == MapObject.MapType.Tree){
+                    finalMap += "7"+ ","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+                }else if(arrayObject[i][j].getType() == MapObject.MapType.Tower){
+                finalMap += "7"+ ","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+            }
+        }
+
+
+        int x = (int)(target.getPos().x)/64;
+        int y = (int)(target.getPos().y)/64;
+        if (x > 19) x = 19; if(x <1) x = 1;
+        if (y > 13) y = 13; if(y <1) y = 1;
+
+        System.out.println("hole "+ x +" " + y + " "+target.getPos().x +" "+ target.getPos().y);
+
+        //add hole position
+        finalMap += "8,0,"+ x +","+ y+";";
+
+        file.writeString(finalMap, false);
+    }
+
+    /*static void pngMap(String filename, MapObject[][] arrayObject){
+        int width = 1152;
+        int height = 768;
+
+        BufferedImage bufferedImage2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB );
+        Graphics g = bufferedImage2.getGraphics();
+
+        try {
+
+            BufferedImage grass;
+            BufferedImage dirt;
+            BufferedImage sand;
+            BufferedImage water;
+
+            try{
+                //this is for the output .jar file
+                grass = ImageIO.read(Map.class.getResource("/texture/grass.png"));
+                dirt = ImageIO.read(Map.class.getResource("/texture/dirt.png"));
+                sand = ImageIO.read(Map.class.getResource("/texture/sand.png"));
+                water = ImageIO.read(Map.class.getResource("/texture/water.jpg"));
+
+            }catch(IllegalArgumentException e) {
+
+                grass = ImageIO.read(new File("texture/grass.png"));
+                dirt = ImageIO.read(new File("texture/dirt.png"));
+                sand = ImageIO.read(new File("texture/sand.png"));
+                water = ImageIO.read(new File("texture/water.jpg"));
+            }
+
+            int xOff = 0, yOff =0;
+
+            for(int i=1; i<arrayObject.length-1; i++) {
+                for (int j = 1; j<arrayObject[0].length-1; j++) {
+
+                    if(yOff>=(height))yOff = 0;
+
+                    if (arrayObject[i][j].getType() == MapObject.MapType.Grass) {
+                        g.drawImage(grass, xOff, yOff, null);
+                    } else if (arrayObject[i][j].getType() == MapObject.MapType.Dirt) {
+                        g.drawImage(dirt, xOff, yOff, null);
+                    } else if (arrayObject[i][j].getType() == MapObject.MapType.Sand) {
+                        g.drawImage(sand, xOff, yOff, null);
+                    } else if (arrayObject[i][j].getType() == MapObject.MapType.Water) {
+                        g.drawImage(water, xOff, yOff, null);
+                    }else if (arrayObject[i][j].getType() == MapObject.MapType.Tree) {
+                        g.drawImage(grass, xOff, yOff, null);
+                    }
+                    yOff +=64;
+                }
+                xOff += 64;
+            }
+
+            ImageIO.write(bufferedImage2,"png",new File(filename));
+        }catch (IOException ioex){ ioex.printStackTrace(); }*/
+
+    }
 }
 
-//    public int[][] generateArray(){
-//
-//
-//    }
+
+
+
 
 
 
