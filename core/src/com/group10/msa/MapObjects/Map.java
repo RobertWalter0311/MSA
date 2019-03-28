@@ -39,7 +39,7 @@ public class Map {
 
 
     public int[][] readFileArray() throws IOException {
-        File file = new File("C:\\Users\\Notebook\\git\\MSA\\MSA\\core\\assets\\Data\\1wall.tmx");
+        File file = new File("C:\\Users\\Kit\\Documents\\Git\\MSA6\\core\\assets\\Data\\1wall.tmx");
         FileInputStream fileStream = new FileInputStream(file);
         InputStreamReader input = new InputStreamReader(fileStream);
         BufferedReader reader = new BufferedReader(input);
