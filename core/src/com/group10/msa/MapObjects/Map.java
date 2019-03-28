@@ -29,6 +29,20 @@ public class Map {
         return mapArray;
     }
 
+
+
+    /*static void createMap(MapObject[][] arrayObject, MapObject target){
+
+        //create the map txt file with the coordinates
+        mapTxt("MapInfo.txt", arrayObject,target);
+
+
+        //generate a texture map
+        pngMap("MapTexture.png", arrayObject);
+    }*/
+
+
+
     public int[][] readFileArray() throws IOException {
         File file = new File("/Users/juluen/IdeaProjects/MSA/core/assets/Data/1wall.tmx");
         FileInputStream fileStream = new FileInputStream(file);
