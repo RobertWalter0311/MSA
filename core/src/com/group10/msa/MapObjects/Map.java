@@ -113,35 +113,26 @@ public class Map {
             for (int j = 0; j < arrayObject[0].length; j++) {
 
                 if(arrayObject[i][j].getType() == MapObject.MapType.Grass){
-                    finalMap += "2"+ ","+ (arrayObject[i][j].getPos().x+32) + ","+ (arrayObject[i][j].getPos().y+32) +";";
+                    finalMap += "2";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Dirt){
-                    finalMap += "3"+ ","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+                    finalMap += "3";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Sand){
-                    finalMap += "4"+","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+                    finalMap += "4";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Water){
-                    finalMap += "5"+ ","+ "0" +","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+                    finalMap += "5";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Wall){
-                    finalMap += "6"+ ","+ "0" +","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+                    finalMap += "6";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Tree){
-                    finalMap += "7"+ ","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+                    finalMap += "7";
                 }else if(arrayObject[i][j].getType() == MapObject.MapType.Tower){
-                finalMap += "7"+ ","+ (arrayObject[i][j].getPos().x+32)+ ","+ (arrayObject[i][j].getPos().y+32) +";";
+                    finalMap += "8";
+                }else if(arrayObject[i][j].getType() == MapObject.MapType.Target){
+                    finalMap += "9";
+                }
             }
+
+            file.writeString(finalMap, false);
         }
-
-
-        int x = (int)(target.getPos().x)/64;
-        int y = (int)(target.getPos().y)/64;
-        if (x > 19) x = 19; if(x <1) x = 1;
-        if (y > 13) y = 13; if(y <1) y = 1;
-
-        System.out.println("hole "+ x +" " + y + " "+target.getPos().x +" "+ target.getPos().y);
-
-        //add hole position
-        finalMap += "8,0,"+ x +","+ y+";";
-
-        file.writeString(finalMap, false);
-    }
 
     /*static void pngMap(String filename, MapObject[][] arrayObject){
         int width = 1152;
