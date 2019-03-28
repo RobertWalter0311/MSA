@@ -33,7 +33,7 @@ public class Agent {
 
     //calculates x and y components needed to move (potentially diagonally) at 1.4 metres a second
     public void move(){
-        setAudioRadius();
+        //setAudioRadius();
         //System.out.println(" x " + x + " y " + y);
         //if( x > 790 || x < 0 || y > 790 || y < 0)
           //direction *= Math.PI; // to be deleted, just for testing
@@ -314,9 +314,11 @@ public class Agent {
         }
     }
     public void plan (){
-        move();
-        //
         if(world[(int)x/10][(int)y/10] == 1) speed = 0;
+        else move();
+        setAudioRadius();
+        //
+
     }
 
 }
