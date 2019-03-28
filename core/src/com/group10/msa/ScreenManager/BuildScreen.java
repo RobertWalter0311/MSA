@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.group10.msa.MapObjects.Map;
 import com.group10.msa.MapObjects.MapObject;
 import com.group10.msa.MapObjects.MapObject.MapType;
 
@@ -74,7 +75,7 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
                 if(i==0|| i== arrayObject.length-1 || j==0 || j== arrayObject[0].length-1) {
                     arrayObject[i][j] = new MapObject(MapObject.MapType.Wall, new Vector2(i * 16, 1080 - j * 16));
                 }else{
-                    arrayObject[i][j] = new MapObject(MapType.Null, new Vector2(i * 16, 1080 - j * 16));
+                    arrayObject[i][j] = new MapObject(MapType.Grass, new Vector2(i * 16, 1080 - j * 16));
 
                 }
             }
