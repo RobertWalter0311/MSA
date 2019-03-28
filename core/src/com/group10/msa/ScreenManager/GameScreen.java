@@ -58,8 +58,8 @@ public class GameScreen implements Screen{
 	public int[][] world;
 	private ShapeRenderer shapeRenderer = new ShapeRenderer();
 	private ArrayList<Agent> agents = new ArrayList<Agent>();
-	private TargetArea target1;
-	private TargetArea target2;
+    private TargetArea target1;
+    private TargetArea target2;
 	private int frameRate = 0;
 
 	public final float WALK = (float)1.4;

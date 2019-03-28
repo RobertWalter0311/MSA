@@ -183,9 +183,9 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
             render.circle(1380, 740, 8);
         else if(terrainSelect == MapType.Sand)
             render.circle(1295, 660, 8);
-        else if(terrainSelect == MapType.Water)
-            render.circle(1380, 660, 8);
         else if(terrainSelect == MapType.Wall)
+            render.circle(1380, 660, 8);
+        else if(terrainSelect == MapType.Water)
             render.circle(1295, 580, 8);
         else if(terrainSelect == MapType.Tree)
             render.circle(1380, 580, 8);
@@ -241,21 +241,21 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
     @Override
     public boolean keyUp(int keycode){
 
-        if (keycode== Input.Keys.NUM_1)
+        if (keycode== Input.Keys.NUM_2)
             terrainSelect = MapType.Grass;
-        else if (keycode== Input.Keys.NUM_2)
-            terrainSelect = MapType.Dirt;
         else if (keycode== Input.Keys.NUM_3)
-            terrainSelect = MapType.Sand;
+            terrainSelect = MapType.Dirt;
         else if (keycode== Input.Keys.NUM_4)
+            terrainSelect = MapType.Sand;
+        else if (keycode== Input.Keys.NUM_1)
             terrainSelect = MapType.Target;
         else if (keycode== Input.Keys.NUM_5)
             terrainSelect = MapType.Wall;
-        else if (keycode== Input.Keys.NUM_9)
+        else if (keycode== Input.Keys.NUM_8)
             terrainSelect = MapType.Tower;
         else if (keycode== Input.Keys.NUM_7)
             terrainSelect = MapType.Tree;
-        else if (keycode== Input.Keys.NUM_8)
+        else if (keycode== Input.Keys.NUM_6)
             terrainSelect = MapType.Water;
         return false;
 
