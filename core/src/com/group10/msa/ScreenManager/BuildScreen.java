@@ -119,6 +119,11 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
         resetTargetArea.addListener(new InputListener(){
             public boolean touchDown(InputEvent event,float x, float y, int pointer, int button){
                 target = null;
+                for(int i = 0; i < arrayObject.length; i++){
+                    for(int j = 0; j< arrayObject[0].length; j++){
+                        if(arrayObject[i][j].getType()==MapType.Target) arrayObject[i][j] = new MapObject(MapType.Grass,new Vector2(i*16,1080-16*j));
+                    }
+                }
                 targetPlaced = false;
                 return true;
             }
@@ -315,6 +320,7 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
                     System.out.println(targetPlaced);
                     if(terrainSelect == MapType.Target && !targetPlaced){// target placing
                     target = new MapObject(terrainSelect, new Vector2(i*16 , 1080 - 16*j));
+                    arrayObject[i][j] = target;
                     targetPlaced = true;
 
                 }else if(terrainSelect != MapType.Target){

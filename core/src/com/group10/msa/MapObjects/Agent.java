@@ -315,7 +315,7 @@ public class Agent {
     }
     public void plan (){
         if(world[(int)x/10][(int)y/10] == 1) speed = 0;
-        else move();
+        //else move();
         setAudioRadius();
         //
 
