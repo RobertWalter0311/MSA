@@ -45,7 +45,7 @@ public class Map {
 
 
     public int[][] readFileArray() throws IOException {
-        File file = new File("/Users/juluen/IdeaProjects/MSA/core/assets/Data/1wall.tmx");
+        File file = new File("C:\\Users\\Kit\\Documents\\Git\\MSA6\\core\\assets\\Data\\1wall.tmx");
         FileInputStream fileStream = new FileInputStream(file);
         InputStreamReader input = new InputStreamReader(fileStream);
         BufferedReader reader = new BufferedReader(input);
@@ -66,7 +66,7 @@ public class Map {
         int u = 0;
         while ((line = reader.readLine()) != null) {
             if(line.contains(",")){
-                for(int i = 0; i<line.length(); i++) {
+                for(int i = 0; i<80; i++) {
                     if (line.charAt(i) != ',') {
 
                         array += line.charAt(i);
