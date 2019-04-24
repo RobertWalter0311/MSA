@@ -66,7 +66,7 @@ public class Map {
                     }
 
                 }
-                u = 79;
+                u = 0;
                 j++;
                 array += '\n';
             }
