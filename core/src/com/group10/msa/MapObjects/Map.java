@@ -6,7 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import java.io.*;
 
 
-
+//hiiiii
 public class Map {
 
     public MapObject[][] mapObjects;
