@@ -58,8 +58,8 @@ public class GameScreen implements Screen{
 	public int[][] world;
 	private ShapeRenderer shapeRenderer = new ShapeRenderer();
 	private ArrayList<Agent> agents = new ArrayList<Agent>();
-	private TargetArea target1;
-	private TargetArea target2;
+    private TargetArea target1;
+    private TargetArea target2;
 	private int frameRate = 0;
 
 	public final float WALK = (float)1.4;
@@ -116,7 +116,7 @@ public class GameScreen implements Screen{
 			MapLayers layers = map.getLayers();
 			TiledMapTileLayer layer = new TiledMapTileLayer(800, 800, 10, 10);
 			for (int x = 0; x < 80; x++) {
-				for (int y = 79; y >= 0; y--) {
+				for (int y = 0; y <80; y++) {
 					Cell cell = new TiledMapTileLayer.Cell();
 					if(world[x][y] == 1){
 						cell.setTile(new StaticTiledMapTile(tTarget));}
@@ -143,8 +143,8 @@ public class GameScreen implements Screen{
 					}
 				}
 				layers.add(layer);
-			Agent agent1 = new Agent(330,300, (float)(Math.PI),world);
-			Agent agent2 = new Agent(430,200, (float)(Math.PI/2), world);
+			Agent agent1 = new Agent(305,300, 0,world);
+			Agent agent2 = new Agent(400,300, (float) Math.PI, world);
 			agents.add(agent1);
 			agents.add(agent2);
 			agent1.speed = (1.4f);

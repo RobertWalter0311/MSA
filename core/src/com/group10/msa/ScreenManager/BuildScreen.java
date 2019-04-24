@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -17,9 +18,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.group10.msa.MAS;
 import com.group10.msa.MapObjects.Map;
 import com.group10.msa.MapObjects.MapObject;
 import com.group10.msa.MapObjects.MapObject.MapType;
@@ -27,7 +30,7 @@ import com.group10.msa.MapObjects.MapObject.MapType;
 
 public class BuildScreen extends ApplicationAdapter implements InputProcessor,Screen{
 
-    //final MAS game;
+    final MAS game;
 
     SpriteBatch batch;
     OrthographicCamera cam;
@@ -47,8 +50,9 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
 
 
 
-    public BuildScreen() {
+    public BuildScreen(final MAS game) {
 
+        this.game = game;
 
 
         BuildAssets.load();
@@ -115,8 +119,20 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
         resetTargetArea.addListener(new InputListener(){
             public boolean touchDown(InputEvent event,float x, float y, int pointer, int button){
                 target = null;
+                for(int i = 0; i < arrayObject.length; i++){
+                    for(int j = 0; j< arrayObject[0].length; j++){
+                        if(arrayObject[i][j].getType()==MapType.Target) arrayObject[i][j] = new MapObject(MapType.Grass,new Vector2(i*16,1080-16*j));
+                    }
+                }
                 targetPlaced = false;
                 return true;
+            }
+        });
+        TextButton menu = new TextButton("Menu",skin);
+        menu.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.setScreen(new MenuScreen(game));
             }
         });
 
@@ -125,6 +141,8 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
         table.add(resetTargetArea);
         table.row();
         table.add(save);
+        table.row();
+        table.add(menu);
         table.row();
 
 
@@ -183,9 +201,9 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
             render.circle(1380, 740, 8);
         else if(terrainSelect == MapType.Sand)
             render.circle(1295, 660, 8);
-        else if(terrainSelect == MapType.Water)
-            render.circle(1380, 660, 8);
         else if(terrainSelect == MapType.Wall)
+            render.circle(1380, 660, 8);
+        else if(terrainSelect == MapType.Water)
             render.circle(1295, 580, 8);
         else if(terrainSelect == MapType.Tree)
             render.circle(1380, 580, 8);
@@ -241,23 +259,24 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
     @Override
     public boolean keyUp(int keycode){
 
-        if (keycode== Input.Keys.NUM_1)
+        if (keycode== Input.Keys.NUM_2)
             terrainSelect = MapType.Grass;
-        else if (keycode== Input.Keys.NUM_2)
-            terrainSelect = MapType.Dirt;
         else if (keycode== Input.Keys.NUM_3)
-            terrainSelect = MapType.Sand;
+            terrainSelect = MapType.Dirt;
         else if (keycode== Input.Keys.NUM_4)
+            terrainSelect = MapType.Sand;
+        else if (keycode== Input.Keys.NUM_1)
             terrainSelect = MapType.Target;
         else if (keycode== Input.Keys.NUM_5)
             terrainSelect = MapType.Wall;
-        else if (keycode== Input.Keys.NUM_9)
+        else if (keycode== Input.Keys.NUM_8)
             terrainSelect = MapType.Tower;
         else if (keycode== Input.Keys.NUM_7)
             terrainSelect = MapType.Tree;
-        else if (keycode== Input.Keys.NUM_8)
+        else if (keycode== Input.Keys.NUM_9)
             terrainSelect = MapType.Water;
         return false;
+        
 
     }
 
@@ -301,6 +320,7 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
                     System.out.println(targetPlaced);
                     if(terrainSelect == MapType.Target && !targetPlaced){// target placing
                     target = new MapObject(terrainSelect, new Vector2(i*16 , 1080 - 16*j));
+                    arrayObject[i][j] = target;
                     targetPlaced = true;
 
                 }else if(terrainSelect != MapType.Target){

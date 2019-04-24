@@ -69,7 +69,6 @@ public class MenuScreen implements Screen {
         table.setFillParent(true);
         //table.setDebug(true);
         stage.addActor(table);
-
         skin = new Skin(Gdx.files.internal("skin/neon-ui.json"));
 
         startSim = new TextButton("Start Simulation", skin);
@@ -92,7 +91,7 @@ public class MenuScreen implements Screen {
         mapBuild.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                game.setScreen(new BuildScreen());
+                game.setScreen(new BuildScreen(game));
             }
         });
         exit.addListener(new ChangeListener() {
