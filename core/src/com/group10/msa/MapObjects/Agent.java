@@ -17,9 +17,10 @@ public class Agent {
     public float visionDistance = 150;
     public float visionDegree = (float)(Math.PI/4);
     private int[][] world;
+    private int[][] agentsVision = new int [8][8];
     public Sprite sprite;
     public float audioRadius = 20;
-
+    public int[][] agentsworld = new int[80][80];
     public Agent(float xStart, float yStart, float startDir,int[][] world){
         this.x = xStart;
         this.y = yStart;
@@ -170,29 +171,31 @@ public class Agent {
         return vision;
     }
     public ArrayList<float[]> visionField(float[][] vision){
+        System.out.println(" x " + this.x + " y " + this.y);
         //find biggest and smallest x,y values
         int maxX = 0, maxY = 0;
         int minX = 79, minY = 79;
         for(float[] i : vision) {
-            if (((int) i[0] / 10) > maxX) maxX = ((int) i[0] / 10);
-            if (((int) i[0] / 10) < minX) minX = ((int) i[0] / 10);
             if (((int) i[1] / 10) > maxY) maxY = ((int) i[1] / 10);
             if (((int) i[1] / 10) < minY) minY = ((int) i[1] / 10);
+            if (((int) i[0] / 10) > maxX) maxX = ((int) i[0] / 10);
+            if (((int) i[0] / 10) < minX) minX = ((int) i[0] / 10);
         }
         ArrayList<float[]> points = new ArrayList<float[]>();
         maxX += 1;
         maxY +=1;
-        //System.out.println("minx "+ minX + " miny " + minY + " maxx " + maxX + " maxy " +maxY );
+        System.out.println("minx "+ minX + " miny " + minY + " maxx " + maxX + " maxy " +maxY );
         //starting from the smallest
-        int[][] agentsVision = new int[maxX-minX+1][maxY-minY+1];
+        agentsVision = new int[maxY-minY+1][maxX-minX+1];
         int count = 0;
-        for(int i = maxX; i >= minX;i--){
-            for(int j = maxY; j >= minY;j--){
-                float[] p= {i*10,j*10};
+        for(int i = maxY; i >= minY;i--){
+            for(int j = maxX; j >= minX;j--){
+                float[] p= {j*10,i*10};
                 //System.out.println(p[0] + " "+ p[1]);
                 if(p[0]>=0 &&p[0] < 800 && p[1] >=0 && p[1] < 800 &&
                         isInVisionField(p, vision[0], vision[1],vision[2])){
-                    agentsVision[i-minX][j-minY] = world[i][j];
+                    agentsVision[i-minY][j-minX] = world[i][j];
+                    agentsworld[i][j] = world[i][j];
                     count++;
                     points.add(p);
                 }
@@ -203,9 +206,10 @@ public class Agent {
                 if(agentsVision[i][j] == 0){
                     for(int k = 0; k < 10; k++){
                         for(int l = 0; l < 10; l++){
-                            float[] p = {(((minX+i)*10)+k),(((minY+j)*10)+l)};
+                            float[] p = {(((minX+j)*10)+k),(((minY+i)*10)+l)};
                             if(p[0]>=0 &&p[0] < 800 && p[1] >=0 && p[1] < 800 &&isInVisionField(p, vision[0],vision[1], vision[2])){
-                                agentsVision[i][j] = world[minX+i][minY+j];
+                                agentsVision[i][j] = world[minY+i][minX+j];
+                                agentsworld[minY+i][minX+j] = world[minY+i][minX+j];
                                 k = 10;
                                 l=10;
                                 count++;
@@ -216,7 +220,7 @@ public class Agent {
                 }
             }
         }
-        agentsVision[((int)vision[0][0]/10)-minX][((int)vision[0][1]/10)-minY] = 9;
+        //agentsVision[((int)vision[0][1]/10)-minY][((int)vision[0][0]/10)-minX] = 6;
         //System.out.println("Direction" + direction);
         /*for(int i = 0; i < agentsVision.length;i++){
             for(int j = 0; j < agentsVision[0].length; j++){
@@ -316,9 +320,22 @@ public class Agent {
     public void plan (){
         if(world[(int)x/10][(int)y/10] == 1) speed = 0;
         else move();
-        setAudioRadius();
-        //
 
+        for(int i = agentsVision.length-1; i >= 0 ; i--){
+            for(int j = agentsVision[i].length-1; j >= 0 ; j--){
+
+                System.out.print(agentsVision[i][j]);
+            }
+            System.out.println();
+        }
+        for(int i = agentsworld.length-1; i >= 0 ; i--){
+            for(int j = 0; j <agentsworld[i].length; j++){
+
+                System.out.print(agentsworld[i][j]);
+            }
+            System.out.println();
+        }
+        setAudioRadius();
     }
 
 }
