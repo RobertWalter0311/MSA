@@ -27,7 +27,7 @@ public class Map {
 
 
     public int[][] readFileArray() throws IOException {
-        File file = new File("C:\\Users\\Notebook\\git\\MSA\\MSA\\core\\assets\\MapInfo.txt");
+        File file = new File("C:\\Users\\ParthUM\\Desktop\\MSA\\core\\assets\\MapInfo.txt");
         FileInputStream fileStream = new FileInputStream(file);
         InputStreamReader input = new InputStreamReader(fileStream);
         BufferedReader reader = new BufferedReader(input);
