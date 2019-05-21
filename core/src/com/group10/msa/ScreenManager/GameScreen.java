@@ -143,12 +143,12 @@ public class GameScreen implements Screen{
 					}
 				}
 				layers.add(layer);
-			Agent agent1 = new Agent(305,50, 0,world);
-			//Agent agent2 = new Agent(400,300, (float) Math.PI, world);
+			Agent agent1 = new Agent(305,300, 0,world);
+			Agent agent2 = new Agent(400,300, (float) Math.PI, world);
 			agents.add(agent1);
-			//agents.add(agent2);
+			agents.add(agent2);
 			agent1.speed = (1.4f);
-            //agent2.speed = (1.4f);
+            agent2.speed = (1.4f);
 			Vector2 v1 = new Vector2(300,600);
             Vector2 v2 = new Vector2(400,400);
             target1 = new TargetArea(Target, v1);
