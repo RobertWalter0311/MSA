@@ -2,6 +2,7 @@ package com.group10.msa.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+//import com.group10.msa.Atlas;
 import com.group10.msa.MAS;
 
 public class DesktopLauncher {
