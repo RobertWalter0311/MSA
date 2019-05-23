@@ -4,8 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.PriorityQueue;
 
 public class Agent {
 
@@ -20,6 +24,9 @@ public class Agent {
     private int[][] agentsVision = new int [8][8];
     public Sprite sprite;
     public float audioRadius = 20;
+    private float xDir = 0;
+    private float yDir = 0;
+
     public int[][] agentsworld = new int[80][80];
     public Agent(float xStart, float yStart, float startDir,int[][] world){
         this.x = xStart;
@@ -40,17 +47,20 @@ public class Agent {
           //direction *= Math.PI; // to be deleted, just for testing
         int tempx = (int)(x+5+(metresToCoord(speed)*Math.cos(direction)));
         int tempy = (int)(y+5+(metresToCoord(speed)*Math.sin(direction)));
-        tempx *=0.1;
+        tempx *= 0.1;
         tempy *= 0.1;
 
         if(world[tempx][tempy] == 9) {
             System.out.println("TUUUURRRRN" + direction);
+            speed= 1.4f;
+            x+= metresToCoord(speed)*Math.cos(direction);
+            y+= metresToCoord(speed)*Math.sin(direction);
 
-            turn ((float)Math.PI+ direction);
+//            turn ((float)Math.PI+ direction);
         }
         else{
             speed= 1.4f;
-            x += metresToCoord(speed)*Math.cos(direction);
+            x+= metresToCoord(speed)*Math.cos(direction);
             y+= metresToCoord(speed)*Math.sin(direction);
         }
 
@@ -88,18 +98,205 @@ public class Agent {
     }
     //experimental, moves straight to a target area
     public void headTo(float objx, float objy){
-        speed = metresToCoord(1.4f);
+        //speed = metresToCoord(1.4f);
 
         if(direction != getAngle(objx,objy)) {
             turn(getAngle(objx,objy));
         }
 
         else{
-            if(Math.abs(x-objx) < 1 && Math.abs(y-objy) < 1) {
+            move();
+            if(Math.abs(x-objx) < 0.1 && Math.abs(y-objy) < 0.1) {
                 speed = 0;
             }
         }
 
+    }
+    //pathfinding way to get around
+    public void aStarHeadTo(float objx, float objy){
+        System.out.println("Start pathfinding>>>>>");
+        int gridX = (int)((this.getX()+5)/10);
+        int gridY = (int)((this.getY()+5)/10);
+        int gridObjX = (int)(objx/10);
+        int gridObjY = (int)(objy/10);
+        ArrayList<Integer> coordListX = new ArrayList();
+        ArrayList<Integer> coordListY = new ArrayList();
+
+        ArrayList openlist = new ArrayList<Node>();
+        ArrayList closedlist = new ArrayList<Node>();
+
+        ArrayList path = new ArrayList<Node>();
+
+        Node root = new Node(gridX, gridY);
+        Node current = root;
+        openlist.add(current);
+        for(int m = 0; m <10000 ;m++){
+                //!(current.getXcoords() == gridObjX && current.getYcoords() == gridObjY)){
+//            if(current.getXcoords() == gridObjX && current.getYcoords() == gridObjY){
+//                System.out.println("end found");
+//            }
+            Node child1 = new Node(current.getXcoords()+1,current.getYcoords(), current);
+            Node child2 = new Node(current.getXcoords()+1,current.getYcoords()+1, current);
+            Node child3 = new Node(current.getXcoords(),current.getYcoords()+1, current);
+            Node child4 = new Node(current.getXcoords()-1,current.getYcoords()+1, current);
+            Node child5 = new Node(current.getXcoords()-1,current.getYcoords(), current);
+            Node child6 = new Node(current.getXcoords()-1,current.getYcoords()-1, current);
+            Node child7 = new Node(current.getXcoords(),current.getYcoords()-1, current);
+            Node child8 = new Node(current.getXcoords()+1,current.getYcoords()-1, current);
+            Node[] tempChildren = {child1,child2,child3,child4,child5,child6,child7,child8};
+            boolean one = true;
+            boolean two = true;
+            boolean three = true;
+            boolean four = true;
+            boolean five = true;
+            boolean six = true;
+            boolean seven = true;
+            boolean eight = true;
+
+
+            for (int n = 0; n < coordListX.size(); n++) {
+                if(child1.getXcoords() == coordListX.get(n) && child1.getYcoords() == coordListY.get(n)){
+                    one = false;
+                }
+                if(child2.getXcoords() == coordListX.get(n) && child2.getYcoords() == coordListY.get(n)){
+                    two = false;
+                }
+                if(child3.getXcoords() == coordListX.get(n) && child3.getYcoords() == coordListY.get(n)){
+                    three = false;
+                }
+                if(child4.getXcoords() == coordListX.get(n) && child4.getYcoords() == coordListY.get(n)){
+                    four = false;
+                }
+                if(child5.getXcoords() == coordListX.get(n) && child5.getYcoords() == coordListY.get(n)){
+                    five = false;
+                }
+                if(child6.getXcoords() == coordListX.get(n) && child6.getYcoords() == coordListY.get(n)){
+                    six = false;
+                }
+                if(child7.getXcoords() == coordListX.get(n) && child7.getYcoords() == coordListY.get(n)){
+                    seven = false;
+                }
+                if(child8.getXcoords() == coordListX.get(n) && child8.getYcoords() == coordListY.get(n)){
+                    eight = false;
+                }
+            }
+
+            if(world[child1.getXcoords()][child1.getYcoords()] != 9 && one) {
+                current.addChild(child1);
+            }
+            if(world[child2.getXcoords()][child2.getYcoords()] != 9 && two) {
+                current.addChild(child2);
+            }
+            if(world[child3.getXcoords()][child3.getYcoords()] != 9 && three) {
+                current.addChild(child3);
+            }
+            if(world[child4.getXcoords()][child4.getYcoords()] != 9 && four) {
+                current.addChild(child4);
+            }
+            if(world[child5.getXcoords()][child5.getYcoords()] != 9 && five) {
+                current.addChild(child5);
+            }
+            if(world[child6.getXcoords()][child6.getYcoords()] != 9 && six) {
+                current.addChild(child6);
+            }
+            if(world[child7.getXcoords()][child7.getYcoords()] != 9 && seven) {
+                current.addChild(child7);
+            }
+            if(world[child8.getXcoords()][child8.getYcoords()] != 9 && eight) {
+                current.addChild(child8);
+            }
+
+            List children = current.getChildren();
+            float min = 100000;
+            System.out.println(current.getXcoords() + "      " + current.getYcoords());
+            coordListX.add(current.getXcoords());
+            coordListY.add(current.getYcoords());
+            closedlist.add(openlist.remove(current));
+            for (int i = 0; i < children.size(); i++) {
+                if (((Node) (children.get(i))).getXcoords() == gridObjX && ((Node) (children.get(i))).getYcoords() == gridObjY) {
+                    System.out.println("end found");
+                    Node pathNode = ((Node)(children.get(i)));
+                    while(pathNode.getXcoords() != gridX || pathNode.getYcoords() != gridY){
+                        path.add(pathNode);
+                        pathNode = pathNode.getParent();
+                    }
+                    ArrayList inversePath = new ArrayList();
+                    for (int k = path.size()-1; k > 0; k--) {
+                        System.out.println(((Node)(path.get(k))).getXcoords() + " , " + ((Node)(path.get(k))).getYcoords());
+                        inversePath.add(path.get(k));
+                    }
+                    headTo(((Node) (inversePath.get(0))).getXcoords()*10, ((Node) (inversePath.get(0))).getYcoords()*10);
+                    //directLine(inversePath);
+                    return;
+                }
+                ((Node) (children.get(i))).setG(Math.abs((((Node) (children.get(i))).getXcoords() - gridX)) + Math.abs((((Node) (children.get(i))).getYcoords() - gridY)));
+
+                ((Node) (children.get(i))).setH(Math.abs((((Node) (children.get(i))).getXcoords() - gridObjX)) + Math.abs((((Node) (children.get(i))).getYcoords() - gridObjY)));
+                coordListX.add(((Node) (children.get(i))).getXcoords());
+                coordListY.add(((Node) (children.get(i))).getYcoords());
+                openlist.add(children.get(i));
+            }
+            for (int i = 0; i < openlist.size(); i++) {
+                if(((Node)(openlist.get(i))).getF() < min){
+
+                    System.out.println(((Node)(openlist.get(i))).getXcoords() + "," + ((Node)(openlist.get(i))).getYcoords());
+                    System.out.println(((Node)(openlist.get(i))).getF());
+                    current = ((Node)(openlist.get(i)));
+                    min = ((Node)(openlist.get(i))).getF();
+                }
+            }
+//            for (int j = 0; j < children.size(); j++) {
+//                    if (((Node) (children.get(j))).getXcoords() == gridObjX && ((Node) (children.get(j))).getYcoords() == gridObjY) {
+//                        System.out.println("end found");
+//                    }
+//                    ((Node) (children.get(j))).setH(Math.abs((((Node) (children.get(j))).getXcoords() - gridObjX)) + Math.abs((((Node) (children.get(j))).getYcoords() - gridObjY)));
+//                    //System.out.println(((Node) (children.get(j))).getF());
+//                    if (Math.min(min, ((Node) (children.get(j))).getF()) == ((Node) (children.get(j))).getF()) {
+//                        min = ((Node) (children.get(j))).getF();
+//                        current = ((Node) (children.get(j)));
+//                        System.out.println(j);
+//                        path.add(((Node) (children.get(j))));
+//                        searched.add(((Node) (children.get(j))));
+//
+//                }
+
+//            }
+            //System.out.println("--------------------");
+
+        }
+
+    }
+
+    public void directLine(ArrayList givenPath){
+        for (int i = givenPath.size()-1; i > 0; i--) {
+            if(probeLine(((Node)(givenPath.get(i))).getXcoords()*10, ((Node)(givenPath.get(i))).getYcoords()*10)){
+                xDir = ((Node)(givenPath.get(i))).getXcoords()*10;
+                yDir = ((Node)(givenPath.get(i))).getYcoords()*10;
+                break;
+            }
+        }
+        System.out.println(xDir + "   " + yDir);
+        headTo(xDir+5,yDir+5);
+    }
+
+    public boolean probeLine(float tX, float tY){
+        ArrayList<Integer> xlist = new ArrayList();
+        ArrayList<Integer> ylist = new ArrayList();
+
+        for (int i = 0; i < 100; i++) {
+            xlist.add((int)(this.getX() + (tX - this.getX())*i/100)/10);
+            ylist.add((int)(this.getY() + (tY - this.getY())*i/100)/10);
+            System.out.println((int)(this.getX() + (tX - this.getX())*i/100)/10 + "  " + (int)(this.getY() + (tY - this.getY())*i/100)/10);
+        }
+
+        for (int i = 2; i < xlist.size(); i++) {
+            if(world[xlist.get(i)][ylist.get(i)] == 9){
+                System.out.println("wall found");
+                return false;
+            }
+        }
+        System.out.println("no wall found");
+        return true;
     }
 
     public void swerveTo(MapObject object){
@@ -111,6 +308,21 @@ public class Agent {
             turn(getAngle(object));
         }
         if(Math.abs(x-objectX) < 1&& Math.abs(y-objectY) <1 ) {
+            speed = 0;
+        }
+
+
+    }
+    public void swerveTo(int xPos, int yPos){
+
+        Vector2 v1 = new Vector2(xPos,yPos);
+
+        MapObject tempObj = new MapObject(null, v1);
+        if(direction != getAngle(tempObj)) {
+            //speed = 1.4f;
+            turn(getAngle(tempObj));
+        }
+        if(Math.abs(x-xPos) < 1&& Math.abs(y-yPos) <1 ) {
             speed = 0;
         }
 
@@ -268,7 +480,7 @@ public class Agent {
         float probab = (float) Math.random();
         if(probab < 0.6827 ){
             float rando = (float) (-10 + (Math.random() * ((10 - (-10)) + 1)));
-            System.out.println("RESULT " +(direc +(float)(Math.toRadians(rando))));
+            //System.out.println("RESULT " +(direc +(float)(Math.toRadians(rando))));
             return direc +(float)(Math.toRadians(rando));
         }
         else if (probab < 0.9545){
@@ -308,7 +520,7 @@ public class Agent {
             for (int j = 0; j < agentsVision[0].length; j++){
                 if( agentsVision[i][j] == 9){
                     if(getAngle((minX+i)*10,(minY+j)*10)== direction ){
-                        System.out.println("i'm going to hit that wall");
+                        //System.out.println("i'm going to hit that wall");
                     }
                 }
                 if (agentsVision[i][j] == 1){
@@ -318,24 +530,26 @@ public class Agent {
         }
     }
     public void plan (){
-        if(world[(int)x/10][(int)y/10] == 1) speed = 0;
-        else move();
-
-        for(int i = agentsVision.length-1; i >= 0 ; i--){
-            for(int j = agentsVision[i].length-1; j >= 0 ; j--){
-
-                System.out.print(agentsVision[i][j]);
-            }
-            System.out.println();
-        }
-        for(int i = agentsworld.length-1; i >= 0 ; i--){
-            for(int j = 0; j <agentsworld[i].length; j++){
-
-                System.out.print(agentsworld[i][j]);
-            }
-            System.out.println();
-        }
+//        if(world[(int)x/10][(int)y/10] == 1) speed = 0;
+//        else move();
+//
+//        for(int i = agentsVision.length-1; i >= 0 ; i--){
+//            for(int j = agentsVision[i].length-1; j >= 0 ; j--){
+//
+//                System.out.print(agentsVision[i][j]);
+//            }
+//            System.out.println();
+//        }
+//        for(int i = agentsworld.length-1; i >= 0 ; i--){
+//            for(int j = 0; j <agentsworld[i].length; j++){
+//
+//                System.out.print(agentsworld[i][j]);
+//            }
+//            System.out.println();
+//        }
         setAudioRadius();
+        //
+
     }
 
 }

@@ -22,9 +22,7 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.group10.msa.MAS;
-import com.group10.msa.MapObjects.Agent;
-import com.group10.msa.MapObjects.Map;
-import com.group10.msa.MapObjects.TargetArea;
+import com.group10.msa.MapObjects.*;
 
 import java.util.ArrayList;
 
@@ -116,7 +114,7 @@ public class GameScreen implements Screen{
 			MapLayers layers = map.getLayers();
 			TiledMapTileLayer layer = new TiledMapTileLayer(800, 800, 10, 10);
 			for (int x = 0; x < 80; x++) {
-				for (int y = 0; y <80; y++) {
+				for (int y = 79; y >= 0; y--) {
 					Cell cell = new TiledMapTileLayer.Cell();
 					if(world[x][y] == 1){
 						cell.setTile(new StaticTiledMapTile(tTarget));}
@@ -143,8 +141,8 @@ public class GameScreen implements Screen{
 					}
 				}
 				layers.add(layer);
-			Agent agent1 = new Agent(305,300, 0,world);
-			Agent agent2 = new Agent(400,300, (float) Math.PI, world);
+			Intruder agent1 = new Intruder(700,700, (float)(Math.PI),world);
+			Guard agent2 = new Guard(330,400, (float)(Math.PI/2), world);
 			agents.add(agent1);
 			agents.add(agent2);
 			agent1.speed = (1.4f);
@@ -153,7 +151,6 @@ public class GameScreen implements Screen{
             Vector2 v2 = new Vector2(400,400);
             target1 = new TargetArea(Target, v1);
             target2 = new TargetArea(Target, v2);
-
 		}
 
 		renderer = new OrthogonalTiledMapRenderer(map);
