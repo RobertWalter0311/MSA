@@ -29,9 +29,9 @@ public class Guard extends Agent {
     @Override
     public void plan() {
         if(firstTime){
-            placePatrolPath();
+
         }
-        patrol();
+        aStarHeadTo(150,150);
         setAudioRadius();
         firstTime = false;
 
