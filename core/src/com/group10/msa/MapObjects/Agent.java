@@ -101,7 +101,7 @@ public class Agent {
     }
 
     public boolean inProximity(float objx, float objy){
-        if(Math.abs(x-objx) < 0.2 && Math.abs(y-objy) < 0.2){
+        if(Math.abs(x-objx) < 0.5 && Math.abs(y-objy) < 0.5){
             return true;
         }
         return false;
@@ -154,6 +154,8 @@ public class Agent {
         Node root = new Node(gridX, gridY);
         Node current = root;
         openlist.add(current);
+        boolean pathFound = false;
+
         if(currentPath !=null) {
             if (currentPath.size() <= 2) {
                 headTo(objx, objy);
@@ -245,6 +247,7 @@ public class Agent {
                 closedlist.add(openlist.remove(current));
                 for (int i = 0; i < children.size(); i++) {
                     if (((Node) (children.get(i))).getXcoords() == gridObjX && ((Node) (children.get(i))).getYcoords() == gridObjY) {
+                        pathFound = false;
                         System.out.println("end found");
                         Node pathNode = ((Node) (children.get(i)));
                         while (pathNode.getXcoords() != gridX || pathNode.getYcoords() != gridY) {
@@ -296,8 +299,15 @@ public class Agent {
                 //System.out.println("--------------------");
 
             }
+            if(!pathFound){
+                System.out.println("no path found");
+                return;
+            }
+
         }
-        headTo(((Node) (currentPath.get(0))).getXcoords() * 10, ((Node) (currentPath.get(0))).getYcoords() * 10);
+        if (pathFound) {
+            headTo(((Node) (currentPath.get(0))).getXcoords() * 10, ((Node) (currentPath.get(0))).getYcoords() * 10);
+        }
 
     }
 

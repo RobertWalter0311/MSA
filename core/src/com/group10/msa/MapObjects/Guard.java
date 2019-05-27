@@ -30,8 +30,8 @@ public class Guard extends Agent {
 
 //        patrol();
         setAudioRadius();
-        if(!inProximity(350, 310)) {
-            aStarHeadTo(350, 310);
+        if(!inProximity(50, 500)) {
+            aStarHeadTo(50, 500);
         }
         temp = false;
 
