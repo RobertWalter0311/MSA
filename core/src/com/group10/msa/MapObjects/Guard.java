@@ -8,38 +8,38 @@ public class Guard extends Agent {
     private float direction;
     ArrayList<Tuple> waypoints = new ArrayList<Tuple>();
     private int i = 0;
-    private boolean temp = true;
+    private boolean firstTime = true;
+    private int[][] world;
     class Tuple {
         float waypointX, waypointY;
         Tuple(float waypointX, float waypointY){
-
             this.waypointX = waypointX;
             this.waypointY = waypointY;
-    }
+        }
     }
 
 
     public Guard(float xStart, float yStart, float startDir,int[][] world) {
         super(xStart, yStart, startDir,world);
+        this.world = world;
         this.direction = startDir;
         placePatrolPath();
     }
 
     @Override
     public void plan() {
-
-//        patrol();
-        setAudioRadius();
-        if(!inProximity(50, 500)) {
-            aStarHeadTo(50, 500);
+        if(firstTime){
+            placePatrolPath();
         }
-        temp = false;
+        patrol();
+        setAudioRadius();
+        firstTime = false;
 
     }
 
     public void patrol(){
         if(Math.abs(getX()-waypoints.get(i).waypointX) > 1 && Math.abs(getY()-waypoints.get(i).waypointY) > 1) {
-            headTo(waypoints.get(i).waypointX, waypoints.get(i).waypointY);
+            aStarHeadTo(waypoints.get(i).waypointX, waypoints.get(i).waypointY);
         }
         else if(i<waypoints.size()){
             i++;
@@ -56,8 +56,17 @@ public class Guard extends Agent {
     }
 
     public void placePatrolPath(){
-        placeWaypoint(10,5);
-        placeWaypoint(50,70);
+        for (int j = 0; j < world.length; j++) {
+            for (int k = 0; k < world[0].length; k++) {
+                double random = Math.random()*1;
+                if(random < 0.005 && world[k][j] != 9){
+                    System.out.println("place waypoint" + k + " " + j);
+                    placeWaypoint(k,j);
+                }
+            }
+        }
+//        placeWaypoint(10,5);
+//        placeWaypoint(50,70);
     }
 
 

@@ -305,9 +305,8 @@ public class Agent {
             }
 
         }
-        if (pathFound) {
-            headTo(((Node) (currentPath.get(0))).getXcoords() * 10, ((Node) (currentPath.get(0))).getYcoords() * 10);
-        }
+
+        headTo(((Node) (currentPath.get(0))).getXcoords() * 10, ((Node) (currentPath.get(0))).getYcoords() * 10);
 
     }
 
