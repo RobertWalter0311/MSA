@@ -23,7 +23,7 @@ public class Guard extends Agent {
         super(xStart, yStart, startDir,world);
         this.world = world;
         this.direction = startDir;
-        placePatrolPath();
+        randomWaypoints();
     }
 
     @Override
@@ -31,14 +31,14 @@ public class Guard extends Agent {
         if(firstTime){
 
         }
-        aStarHeadTo(150,150);
+        patrol();
         setAudioRadius();
         firstTime = false;
 
     }
 
     public void patrol(){
-        if(Math.abs(getX()-waypoints.get(i).waypointX) > 1 && Math.abs(getY()-waypoints.get(i).waypointY) > 1) {
+        if(Math.abs(getX()-waypoints.get(i).waypointX) > 2 && Math.abs(getY()-waypoints.get(i).waypointY) > 2) {
             aStarHeadTo(waypoints.get(i).waypointX, waypoints.get(i).waypointY);
         }
         else if(i<waypoints.size()){
@@ -55,7 +55,7 @@ public class Guard extends Agent {
         waypoints.add(t);
     }
 
-    public void placePatrolPath(){
+    public void randomWaypoints(){
         for (int j = 0; j < world.length; j++) {
             for (int k = 0; k < world[0].length; k++) {
                 double random = Math.random()*1;

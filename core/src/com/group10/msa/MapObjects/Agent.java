@@ -17,6 +17,8 @@ public class Agent {
     private float y;
     private int storeX;
     private int storeY;
+    private float storeObjX;
+    private float storeObjY;
     private float direction;
     //private boolean walking = true;
     public float speed;
@@ -29,6 +31,8 @@ public class Agent {
     private float xDir = 0;
     private float yDir = 0;
     private ArrayList currentPath;
+    int pathPlace = 0;
+
 
     public int[][] agentsworld = new int[80][80];
     public Agent(float xStart, float yStart, float startDir,int[][] world){
@@ -75,12 +79,12 @@ public class Agent {
     public void turn(float newDir){
         if(direction != newDir){
             float turnSpeed = (float)(Math.PI / 60);
-            if(speed <= 1.4f){
-                turnSpeed = (float)(Math.PI / 60);
-            }
-            else{
-                turnSpeed = (float)((1f/18f)*(Math.PI / 60f));
-            }
+//            if(speed <= 1.4f){
+//                turnSpeed = (float)(Math.PI / 60);
+//            }
+//            else{
+//                turnSpeed = (float)((1f/18f)*(Math.PI / 60f));
+//            }
             if(Math.abs(direction-newDir) > turnSpeed){
                 if(newDir < direction) direction -= turnSpeed;
                 else if(direction < newDir) direction += turnSpeed;
@@ -90,7 +94,7 @@ public class Agent {
             }
         }
 
-        if(direction > 2* Math.PI){
+        if(direction > 2.01* Math.PI){
             direction -= 2*Math.PI;
 
         }
@@ -111,7 +115,7 @@ public class Agent {
     public void headTo(float objx, float objy){
         //speed = metresToCoord(1.4f);
 
-        if(direction != getAngle(objx,objy)) {
+        if(Math.abs(direction - getAngle(objx,objy)) > 0.00001) {
             turn(getAngle(objx,objy));
         }
 
@@ -127,6 +131,17 @@ public class Agent {
     public void aStarHeadTo(float objx, float objy){
         System.out.println("Start pathfinding>>>>>");
         boolean changeTile = false;
+        boolean changeDestination = false;
+        if(objx != storeObjX || objy != storeObjY){
+            System.out.println("New destination" + objx + "  " + objy);
+            currentPath = null;
+            changeTile = true;
+            storeObjX = objx;
+            storeObjY = objy;
+            changeDestination = true;
+            pathPlace = -1;
+        }
+
         int gridX = (int)((this.getX()+5)/10);
         if(gridX != storeX){
             changeTile = true;
@@ -156,13 +171,17 @@ public class Agent {
         openlist.add(current);
         boolean pathFound = false;
 
-        if(currentPath !=null) {
+        if(currentPath != null) {
             if (currentPath.size() <= 2) {
                 headTo(objx, objy);
                 return;
             }
         }
+
         if(changeTile) {
+            pathPlace++;
+        }
+        if(changeDestination){
             for (int m = 0; m < 10000; m++) {
                 //!(current.getXcoords() == gridObjX && current.getYcoords() == gridObjY)){
 //            if(current.getXcoords() == gridObjX && current.getYcoords() == gridObjY){
@@ -241,7 +260,7 @@ public class Agent {
 
                 List children = current.getChildren();
                 float min = 100000;
-                System.out.println(current.getXcoords() + "      " + current.getYcoords());
+                //System.out.println(current.getXcoords() + "      " + current.getYcoords());
                 coordListX.add(current.getXcoords());
                 coordListY.add(current.getYcoords());
                 closedlist.add(openlist.remove(current));
@@ -256,11 +275,11 @@ public class Agent {
                         }
                         ArrayList inversePath = new ArrayList();
                         for (int k = path.size() - 1; k > 0; k--) {
-                            System.out.println(((Node) (path.get(k))).getXcoords() + " , " + ((Node) (path.get(k))).getYcoords());
+                            //System.out.println(((Node) (path.get(k))).getXcoords() + " , " + ((Node) (path.get(k))).getYcoords());
                             inversePath.add(path.get(k));
                         }
                         currentPath = inversePath;
-                        headTo(((Node) (inversePath.get(0))).getXcoords() * 10, ((Node) (inversePath.get(0))).getYcoords() * 10);
+                        headTo(((Node) (inversePath.get(pathPlace))).getXcoords() * 10, ((Node) (inversePath.get(pathPlace))).getYcoords() * 10);
                         //directLine(inversePath);
                         return;
                     }
@@ -274,29 +293,12 @@ public class Agent {
                 for (int i = 0; i < openlist.size(); i++) {
                     if (((Node) (openlist.get(i))).getF() < min) {
 
-                        System.out.println(((Node) (openlist.get(i))).getXcoords() + "," + ((Node) (openlist.get(i))).getYcoords());
-                        System.out.println(((Node) (openlist.get(i))).getF());
+                        //System.out.println(((Node) (openlist.get(i))).getXcoords() + "," + ((Node) (openlist.get(i))).getYcoords());
+                        //System.out.println(((Node) (openlist.get(i))).getF());
                         current = ((Node) (openlist.get(i)));
                         min = ((Node) (openlist.get(i))).getF();
                     }
                 }
-//            for (int j = 0; j < children.size(); j++) {
-//                    if (((Node) (children.get(j))).getXcoords() == gridObjX && ((Node) (children.get(j))).getYcoords() == gridObjY) {
-//                        System.out.println("end found");
-//                    }
-//                    ((Node) (children.get(j))).setH(Math.abs((((Node) (children.get(j))).getXcoords() - gridObjX)) + Math.abs((((Node) (children.get(j))).getYcoords() - gridObjY)));
-//                    //System.out.println(((Node) (children.get(j))).getF());
-//                    if (Math.min(min, ((Node) (children.get(j))).getF()) == ((Node) (children.get(j))).getF()) {
-//                        min = ((Node) (children.get(j))).getF();
-//                        current = ((Node) (children.get(j)));
-//                        System.out.println(j);
-//                        path.add(((Node) (children.get(j))));
-//                        searched.add(((Node) (children.get(j))));
-//
-//                }
-
-//            }
-                //System.out.println("--------------------");
 
             }
             if(!pathFound){
@@ -306,7 +308,13 @@ public class Agent {
 
         }
 
-        headTo(((Node) (currentPath.get(0))).getXcoords() * 10, ((Node) (currentPath.get(0))).getYcoords() * 10);
+
+        try {
+            headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
+        }
+        catch (IndexOutOfBoundsException exception){
+            headTo(objx, objy);
+        }
 
     }
 
@@ -426,7 +434,7 @@ public class Agent {
         return vision;
     }
     public ArrayList<float[]> visionField(float[][] vision){
-        System.out.println(" x " + this.x + " y " + this.y);
+        //System.out.println(" x " + this.x + " y " + this.y);
         //find biggest and smallest x,y values
         int maxX = 0, maxY = 0;
         int minX = 79, minY = 79;
@@ -439,7 +447,7 @@ public class Agent {
         ArrayList<float[]> points = new ArrayList<float[]>();
         maxX += 1;
         maxY +=1;
-        System.out.println("minx "+ minX + " miny " + minY + " maxx " + maxX + " maxy " +maxY );
+        //System.out.println("minx "+ minX + " miny " + minY + " maxx " + maxX + " maxy " +maxY );
         //starting from the smallest
         agentsVision = new int[maxY-minY+1][maxX-minX+1];
         int count = 0;
