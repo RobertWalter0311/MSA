@@ -20,7 +20,6 @@ public class Agent {
     private float storeObjX;
     private float storeObjY;
     private float direction;
-    //private boolean walking = true;
     public float speed;
     public float visionDistance = 150;
     public float visionDegree = (float)(Math.PI/4);
@@ -57,19 +56,19 @@ public class Agent {
         tempx *= 0.1;
         tempy *= 0.1;
 
-        if(world[tempx][tempy] == 9) {
-            System.out.println("TUUUURRRRN" + direction);
+//        if(world[tempx][tempy] == 9) {
+//            System.out.println("TUUUURRRRN" + direction);
+//            speed= 1.4f;
+//            x+= metresToCoord(speed)*Math.cos(direction);
+//            y+= metresToCoord(speed)*Math.sin(direction);
+//
+////            turn ((float)Math.PI+ direction);
+//        }
+        //else{
             speed= 1.4f;
             x+= metresToCoord(speed)*Math.cos(direction);
             y+= metresToCoord(speed)*Math.sin(direction);
-
-//            turn ((float)Math.PI+ direction);
-        }
-        else{
-            speed= 1.4f;
-            x+= metresToCoord(speed)*Math.cos(direction);
-            y+= metresToCoord(speed)*Math.sin(direction);
-        }
+        //}
 
 
     }
@@ -86,8 +85,25 @@ public class Agent {
 //                turnSpeed = (float)((1f/18f)*(Math.PI / 60f));
 //            }
             if(Math.abs(direction-newDir) > turnSpeed){
-                if(newDir < direction) direction -= turnSpeed;
-                else if(direction < newDir) direction += turnSpeed;
+                if(direction>Math.PI) {
+                    if (direction > newDir && newDir > direction - Math.PI) {
+                        direction -= turnSpeed;
+                    }
+                    else {
+                        direction += turnSpeed;
+                    }
+                }
+                else{
+                    if (direction < newDir && newDir < direction + Math.PI) {
+                        direction += turnSpeed;
+                    }
+                    else {
+                        direction -= turnSpeed;
+                    }
+                }
+
+
+
             }
             else{
                 direction = newDir;
@@ -105,7 +121,7 @@ public class Agent {
     }
 
     public boolean inProximity(float objx, float objy){
-        if(Math.abs(x-objx) < 0.5 && Math.abs(y-objy) < 0.5){
+        if(Math.abs(x-objx) < 1 && Math.abs(y-objy) < 1){
             return true;
         }
         return false;
@@ -115,49 +131,45 @@ public class Agent {
     public void headTo(float objx, float objy){
         //speed = metresToCoord(1.4f);
 
-        if(Math.abs(direction - getAngle(objx,objy)) > 0.00001) {
+        if(Math.abs(direction - getAngle(objx,objy)) > 0) {
             turn(getAngle(objx,objy));
         }
-
         else{
             move();
-            if(Math.abs(x-objx) < 0.1 && Math.abs(y-objy) < 0.1) {
-                speed = 0;
-            }
         }
 
     }
     //pathfinding way to get around
-    public void aStarHeadTo(float objx, float objy){
+    public ArrayList aStarTraffic(int startX, int startY, float objx, float objy){
         System.out.println("Start pathfinding>>>>>");
         boolean changeTile = false;
         boolean changeDestination = false;
-        if(objx != storeObjX || objy != storeObjY){
-            System.out.println("New destination" + objx + "  " + objy);
-            currentPath = null;
-            changeTile = true;
-            storeObjX = objx;
-            storeObjY = objy;
-            changeDestination = true;
-            pathPlace = -1;
-        }
+//        if(objx != storeObjX || objy != storeObjY){
+//            System.out.println("New destination" + objx + "  " + objy);
+//            currentPath = null;
+//            changeTile = true;
+//            storeObjX = objx;
+//            storeObjY = objy;
+//            changeDestination = true;
+//            pathPlace = -1;
+//        }
 
-        int gridX = (int)((this.getX()+5)/10);
-        if(gridX != storeX){
-            changeTile = true;
-        }
-        storeX = gridX;
-        int gridY = (int)((this.getY()+5)/10);
-        if(gridY != storeY){
-            changeTile = true;
-        }
-        storeY = gridY;
+        int gridX = startX;
+//        if(gridX != storeX){
+//            changeTile = true;
+//        }
+//        storeX = gridX;
+        int gridY = startY;
+//        if(gridY != storeY){
+//            changeTile = true;
+//        }
+//        storeY = gridY;
         int gridObjX = (int)(objx/10);
         int gridObjY = (int)(objy/10);
-        if(world[gridObjX][gridObjY] == 9){
-            System.out.println("Destination lies within a wall, terminating search");
-            return;
-        }
+//        if(world[gridObjX][gridObjY] == 9){
+//            System.out.println("Destination lies within a wall, terminating search");
+//            return;
+//        }
         ArrayList<Integer> coordListX = new ArrayList();
         ArrayList<Integer> coordListY = new ArrayList();
 
@@ -171,17 +183,17 @@ public class Agent {
         openlist.add(current);
         boolean pathFound = false;
 
-        if(currentPath != null) {
-            if (currentPath.size() <= 2) {
-                headTo(objx, objy);
-                return;
-            }
-        }
+//        if(currentPath != null) {
+//            if (currentPath.size() <= 2) {
+//                headTo(objx, objy);
+//                return;
+//            }
+//        }
 
-        if(changeTile) {
-            pathPlace++;
-        }
-        if(changeDestination){
+//        if(changeTile) {
+//            pathPlace++;
+//        }
+        //if(changeDestination){
             for (int m = 0; m < 10000; m++) {
                 //!(current.getXcoords() == gridObjX && current.getYcoords() == gridObjY)){
 //            if(current.getXcoords() == gridObjX && current.getYcoords() == gridObjY){
@@ -266,7 +278,7 @@ public class Agent {
                 closedlist.add(openlist.remove(current));
                 for (int i = 0; i < children.size(); i++) {
                     if (((Node) (children.get(i))).getXcoords() == gridObjX && ((Node) (children.get(i))).getYcoords() == gridObjY) {
-                        pathFound = false;
+                        //pathFound = false;
                         System.out.println("end found");
                         Node pathNode = ((Node) (children.get(i)));
                         while (pathNode.getXcoords() != gridX || pathNode.getYcoords() != gridY) {
@@ -278,10 +290,10 @@ public class Agent {
                             //System.out.println(((Node) (path.get(k))).getXcoords() + " , " + ((Node) (path.get(k))).getYcoords());
                             inversePath.add(path.get(k));
                         }
-                        currentPath = inversePath;
-                        headTo(((Node) (inversePath.get(pathPlace))).getXcoords() * 10, ((Node) (inversePath.get(pathPlace))).getYcoords() * 10);
+                        //currentPath = inversePath;
+                        //headTo(((Node) (inversePath.get(pathPlace))).getXcoords() * 10, ((Node) (inversePath.get(pathPlace))).getYcoords() * 10);
                         //directLine(inversePath);
-                        return;
+                        return inversePath;
                     }
                     ((Node) (children.get(i))).setG(Math.abs((((Node) (children.get(i))).getXcoords() - gridX)) + Math.abs((((Node) (children.get(i))).getYcoords() - gridY)));
 
@@ -303,20 +315,235 @@ public class Agent {
             }
             if(!pathFound){
                 System.out.println("no path found");
-                return;
+                return null;
             }
 
-        }
+        //}
 
 
         try {
-            headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
+            //headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
         }
         catch (IndexOutOfBoundsException exception){
-            headTo(objx, objy);
+            //headTo(objx, objy);
+        }
+        return null;
+    }
+
+
+    //Moves agent to float coordinates
+    //To have it move until is has reached its destination and then realise it has reached its destination, do the following:
+    //in plan method(or whatever constantly called method you're using):
+    //
+    //if(!inProximity(yourXCoordinate, yourYCoordinate){
+    //      aStarHeadTo(yourXCoordinate, yourYCoordinate)
+    //}
+    //
+    //(and then you can change destination or whatever in the else statement)
+    //The aStarHeadTo method is a boolean so it can return false if the destination is in a wall or can't be reached.
+    public boolean aStarHeadTo(float objx, float objy){
+        System.out.println("Start path-finding>>>>>");
+        boolean changeTile = false;
+        boolean changeDestination = false;
+        if(objx != storeObjX || objy != storeObjY){
+            System.out.println("New destination" + objx + "  " + objy);
+            currentPath = null;
+            storeObjX = objx;
+            storeObjY = objy;
+            changeDestination = true;
+            pathPlace = -1;
         }
 
+        int gridX = (int)((this.getX())/10);
+        if(gridX != storeX){
+            changeTile = true;
+        }
+        storeX = gridX;
+        int gridY = (int)((this.getY())/10);
+        if(gridY != storeY){
+            changeTile = true;
+        }
+        storeY = gridY;
+        int gridObjX = (int)(objx/10);
+        int gridObjY = (int)(objy/10);
+        if(world[gridObjX][gridObjY] == 9){
+            System.out.println("Destination lies within a wall, terminating search");
+            return false;
+        }
+        ArrayList<Integer> coordListX = new ArrayList();
+        ArrayList<Integer> coordListY = new ArrayList();
+
+        ArrayList openlist = new ArrayList<Node>();
+        ArrayList closedlist = new ArrayList<Node>();
+
+        ArrayList path = new ArrayList<Node>();
+
+        Node root = new Node(gridX, gridY);
+        Node current = root;
+        openlist.add(current);
+        boolean pathFound = false;
+
+
+        if(changeTile) {
+            pathPlace++;
+            if(pathPlace>0){
+                for (int i = 0; i < currentPath.size(); i++) {
+                    if(((Node)(currentPath.get(i))).getXcoords() == gridX && ((Node)(currentPath.get(i))).getYcoords() == gridY){
+                        pathPlace = i + 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(changeDestination){
+            for (int m = 0; m < 10000; m++) {
+
+                Node child1 = new Node(current.getXcoords() + 1, current.getYcoords(), current);
+                Node child2 = new Node(current.getXcoords() + 1, current.getYcoords() + 1, current);
+                Node child3 = new Node(current.getXcoords(), current.getYcoords() + 1, current);
+                Node child4 = new Node(current.getXcoords() - 1, current.getYcoords() + 1, current);
+                Node child5 = new Node(current.getXcoords() - 1, current.getYcoords(), current);
+                Node child6 = new Node(current.getXcoords() - 1, current.getYcoords() - 1, current);
+                Node child7 = new Node(current.getXcoords(), current.getYcoords() - 1, current);
+                Node child8 = new Node(current.getXcoords() + 1, current.getYcoords() - 1, current);
+                boolean one = true;
+                boolean two = true;
+                boolean three = true;
+                boolean four = true;
+                boolean five = true;
+                boolean six = true;
+                boolean seven = true;
+                boolean eight = true;
+
+
+                for (int n = 0; n < coordListX.size(); n++) {
+                    if (child1.getXcoords() == coordListX.get(n) && child1.getYcoords() == coordListY.get(n)) {
+                        one = false;
+                    }
+                    if (child2.getXcoords() == coordListX.get(n) && child2.getYcoords() == coordListY.get(n)) {
+                        two = false;
+                    }
+                    if (child3.getXcoords() == coordListX.get(n) && child3.getYcoords() == coordListY.get(n)) {
+                        three = false;
+                    }
+                    if (child4.getXcoords() == coordListX.get(n) && child4.getYcoords() == coordListY.get(n)) {
+                        four = false;
+                    }
+                    if (child5.getXcoords() == coordListX.get(n) && child5.getYcoords() == coordListY.get(n)) {
+                        five = false;
+                    }
+                    if (child6.getXcoords() == coordListX.get(n) && child6.getYcoords() == coordListY.get(n)) {
+                        six = false;
+                    }
+                    if (child7.getXcoords() == coordListX.get(n) && child7.getYcoords() == coordListY.get(n)) {
+                        seven = false;
+                    }
+                    if (child8.getXcoords() == coordListX.get(n) && child8.getYcoords() == coordListY.get(n)) {
+                        eight = false;
+                    }
+                }
+
+                if (world[child1.getXcoords()][child1.getYcoords()] != 9 && one) {
+                    current.addChild(child1);
+                }
+                if (world[child2.getXcoords()][child2.getYcoords()] != 9 && two) {
+                    current.addChild(child2);
+                }
+                if (world[child3.getXcoords()][child3.getYcoords()] != 9 && three) {
+                    current.addChild(child3);
+                }
+                if (world[child4.getXcoords()][child4.getYcoords()] != 9 && four) {
+                    current.addChild(child4);
+                }
+                if (world[child5.getXcoords()][child5.getYcoords()] != 9 && five) {
+                    current.addChild(child5);
+                }
+                if (world[child6.getXcoords()][child6.getYcoords()] != 9 && six) {
+                    current.addChild(child6);
+                }
+                if (world[child7.getXcoords()][child7.getYcoords()] != 9 && seven) {
+                    current.addChild(child7);
+                }
+                if (world[child8.getXcoords()][child8.getYcoords()] != 9 && eight) {
+                    current.addChild(child8);
+                }
+
+                List children = current.getChildren();
+                float min = 100000;
+                coordListX.add(current.getXcoords());
+                coordListY.add(current.getYcoords());
+                closedlist.add(openlist.remove(current));
+                for (int i = 0; i < children.size(); i++) {
+                    if (((Node) (children.get(i))).getXcoords() == gridObjX && ((Node) (children.get(i))).getYcoords() == gridObjY) {
+                        pathFound = false;
+                        System.out.println("end found");
+                        Node pathNode = ((Node) (children.get(i)));
+                        while (pathNode.getXcoords() != gridX || pathNode.getYcoords() != gridY) {
+                            path.add(pathNode);
+                            pathNode = pathNode.getParent();
+                        }
+                        ArrayList inversePath = new ArrayList();
+                        for (int k = path.size()-1; k > -1; k--) {
+                            inversePath.add(path.get(k));
+
+                        }
+                        inversePath.add(new Node(gridObjX,gridObjY));
+                        currentPath = inversePath;
+                        headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
+                        //directLine(inversePath);
+                        return true;
+                    }
+                    ((Node) (children.get(i))).setG(Math.abs((((Node) (children.get(i))).getXcoords() - gridX)) + Math.abs((((Node) (children.get(i))).getYcoords() - gridY)));
+
+                    ((Node) (children.get(i))).setH(Math.abs((((Node) (children.get(i))).getXcoords() - gridObjX)) + Math.abs((((Node) (children.get(i))).getYcoords() - gridObjY)));
+                    coordListX.add(((Node) (children.get(i))).getXcoords());
+                    coordListY.add(((Node) (children.get(i))).getYcoords());
+                    openlist.add(children.get(i));
+                }
+                for (int i = 0; i < openlist.size(); i++) {
+                    if (((Node) (openlist.get(i))).getF() < min) {
+
+                        //System.out.println(((Node) (openlist.get(i))).getXcoords() + "," + ((Node) (openlist.get(i))).getYcoords());
+                        //System.out.println(((Node) (openlist.get(i))).getF());
+                        current = ((Node) (openlist.get(i)));
+                        min = ((Node) (openlist.get(i))).getF();
+                    }
+                }
+
+            }
+            if(!pathFound){
+                System.out.println("no path found");
+                return false;
+            }
+
+        }
+        //System.out.println(this.getX() + "  " + this.getY() + "     " + storeX + "  " + storeY);
+        //System.out.println(pathPlace);
+        try {
+            for (int i = 0; i < currentPath.size(); i++) {
+                //System.out.println(((Node) (currentPath.get(i))).getXcoords() + "  " + ((Node) (currentPath.get(i))).getYcoords());
+
+            }
+        }
+        catch (NullPointerException exception){
+            System.out.println("Destination completely isolated, terminating search");
+            return false;
+        }
+
+
+
+        if(Math.abs(this.getX()-objx)<10 && Math.abs(this.getY()-objy)<10){
+            headTo(objx,objy);
+        }
+        else {
+            headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
+        }
+        return true;
     }
+
+
+
 
     public void directLine(ArrayList givenPath){
         for (int i = givenPath.size()-1; i > 0; i--) {
