@@ -5,4 +5,15 @@ public class Intruder extends Agent {
         super(xStart, yStart, startDir,world);
     }
 
+    @Override
+    public void plan() {
+
+
+        if(!inProximity(200, 50)) {
+            aStarHeadTo(200, 50);
+        }
+        setAudioRadius();
+
+    }
+
 }

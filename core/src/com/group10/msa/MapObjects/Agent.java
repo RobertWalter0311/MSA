@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.group10.msa.ScreenManager.GameScreen;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +32,7 @@ public class Agent {
     private float yDir = 0;
     private ArrayList currentPath;
     int pathPlace = 0;
+    private ArrayList agentList;
 
 
     public int[][] agentsworld = new int[80][80];
@@ -490,6 +492,7 @@ public class Agent {
                         }
                         inversePath.add(new Node(gridObjX,gridObjY));
                         currentPath = inversePath;
+                        pathPlace = 0;
                         headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
                         //directLine(inversePath);
                         return true;
@@ -827,6 +830,22 @@ public class Agent {
 //        }
         setAudioRadius();
         //
+
+    }
+
+    public void setAgentList(ArrayList aList){
+        this.agentList = aList;
+    }
+
+    public boolean radiusDetection(Agent a1, Agent a2){
+        float[] vector = {(a2.getX()+5-(a1.getX()+5)), (a2.getY()+5-(a1.getY()+5))};
+        float temp = (float) Math.sqrt(vector[0]*vector[0] + vector[1]*vector[1]);
+        //System.out.println("vec length " +  temp + " rad " + a2.audioRadius);
+
+        if(temp <= a2.audioRadius) {
+            return true;
+        }
+        else return false;
 
     }
 

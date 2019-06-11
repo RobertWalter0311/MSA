@@ -193,7 +193,12 @@ public class GameScreen implements Screen{
             agent.sprite.translate(-agent.sprite.getX() + agent.getX(), -agent.sprite.getY() + agent.getY());
             agent.sprite.draw(batch);
             batch.end();
+            ArrayList newAgentList = new ArrayList();
             for(Agent otherAgents : agents){
+                if(agent != otherAgents){
+                    newAgentList.add(otherAgents);
+                }
+
                 if(agent != otherAgents && radiusDetection(agent, otherAgents)){
 
                     float noise = agent.normalNoiseDetection(otherAgents.getX(),otherAgents.getY());
@@ -207,6 +212,7 @@ public class GameScreen implements Screen{
                     shapeRenderer.end();
                 }
             }
+            agent.setAgentList(newAgentList);
 
         }
        // batch.end();
@@ -323,5 +329,6 @@ public class GameScreen implements Screen{
         w[3][26] = 1;
         return w;
     }
+
 }
 

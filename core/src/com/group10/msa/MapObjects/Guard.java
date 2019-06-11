@@ -13,6 +13,8 @@ public class Guard extends Agent {
     private boolean firstTime = true;
     private int[][] world;
     private int[][] coverageWorld;
+    private ArrayList agentList;
+
     class Tuple {
         float waypointX, waypointY;
         Tuple(float waypointX, float waypointY){
@@ -26,7 +28,8 @@ public class Guard extends Agent {
         super(xStart, yStart, startDir,world);
         this.world = world;
         this.direction = startDir;
-        //randomWaypoints();
+
+        randomWaypoints();
         //trafficWaypoints();
     }
 
@@ -35,15 +38,20 @@ public class Guard extends Agent {
         if(firstTime){
              //coverageWorld = new int[world[0].length][world.length];
         }
+        if(agentTracker()){
 
-        //createCoverage();
-        if(!inProximity(35, 35)) {
-            aStarHeadTo(35, 35);
         }
-        //patrol();
+        else {
+
+
+            //createCoverage();
+//        if(!inProximity(35, 35)) {
+//            aStarHeadTo(35, 35);
+//        }
+            patrol();
+        }
         setAudioRadius();
         firstTime = false;
-
     }
 
     public void createCoverage(){
@@ -238,5 +246,29 @@ public class Guard extends Agent {
         int currentAreaPosY = (int)(y/10);
         int[] coords = {currentAreaPosX, currentAreaPosY};
         return coords;
+    }
+
+    @Override
+    public void setAgentList(ArrayList aList){
+        this.agentList = aList;
+    }
+
+    public boolean agentTracker(){
+        if(agentList!=null){
+            for (int j = 0; j < agentList.size(); j++) {
+                System.out.println("Agents:");
+                System.out.println(((Agent)(agentList.get(j))).getX() + "      " + ((Agent)(agentList.get(j))).getY());
+                if(radiusDetection(this, ((Agent)(agentList.get(j))))){
+                    System.out.println("found agent");
+                    aStarHeadTo(((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY());
+                    if(Math.abs(((Agent)(agentList.get(j))).getX()-this.getX()) <0.5 && Math.abs(((Agent)(agentList.get(j))).getY()-this.getY()) < 0.5){
+                        System.out.println("Agent caught");
+                        System.exit(-1);
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
