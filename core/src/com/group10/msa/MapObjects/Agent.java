@@ -347,47 +347,75 @@ public class Agent {
         System.out.println("Start path-finding>>>>>");
         boolean changeTile = false;
         boolean changeDestination = false;
+        float[] directCoords = new float[2];
+
+        //When destination changes this happens
         if(objx != storeObjX || objy != storeObjY){
             System.out.println("New destination" + objx + "  " + objy);
+            //The path to the last destination is thrown out
             currentPath = null;
+            //New coordinates are taken
             storeObjX = objx;
             storeObjY = objy;
             changeDestination = true;
             pathPlace = -1;
         }
-
+        //x "pixel" coordinate is used to find current grid square
         int gridX = (int)((this.getX())/10);
+
+        //When the current grid square changes this happens
         if(gridX != storeX){
             changeTile = true;
         }
         storeX = gridX;
+
+        //y "pixel" coordinate is used to find current grid square
         int gridY = (int)((this.getY())/10);
+
+        //when the current grid square changes this happens
         if(gridY != storeY){
             changeTile = true;
         }
         storeY = gridY;
+
+        //Grid square coordinates of the objective are found
         int gridObjX = (int)(objx/10);
         int gridObjY = (int)(objy/10);
+
+        //If the destination lies within a wall, the algorithm will do nothing and return false
+
         if(world[gridObjX][gridObjY] == 9){
             System.out.println("Destination lies within a wall, terminating search");
+
+            //(use this boolean to get out of the infinite loop caused)
             return false;
         }
+
+        //Now the real A* begins
+
+        //these coordlists are used to store each grid square discovered so they are not discovered twice (so there are not 2 or more instances of the same gridsquare)
         ArrayList<Integer> coordListX = new ArrayList();
         ArrayList<Integer> coordListY = new ArrayList();
 
+        //openlist for all the grid squares that have been checked but not all children have been checked
         ArrayList openlist = new ArrayList<Node>();
+        //closedlist for all the gridsquares that have been checked and also had all their children checked
         ArrayList closedlist = new ArrayList<Node>();
 
         ArrayList path = new ArrayList<Node>();
 
+        //A* starts by adding the root to the openlist
+        //There's a class I made called Node that is suitable for representing a grid square, it holds x, y, G, H, F, the parent, and the children
         Node root = new Node(gridX, gridY);
         Node current = root;
         openlist.add(current);
         boolean pathFound = false;
 
-
+        //When the agent has reached the next tile in its journey, this happens
         if(changeTile) {
+            //pathPlace is iterated by 1, telling the agent to head to the next grid square in the sequence
             pathPlace++;
+            //The below if statement just contains some lines that protect from some NullPointer errors and OutOfBounds errors
             if(pathPlace>0){
                 for (int i = 0; i < currentPath.size(); i++) {
                     if(((Node)(currentPath.get(i))).getXcoords() == gridX && ((Node)(currentPath.get(i))).getYcoords() == gridY){
@@ -397,10 +425,12 @@ public class Agent {
                 }
             }
         }
-
+        //When the destination is changed (For instance, when we first start the algorithm, this happens (So the size 10000 loop doesn't happen every frame)
         if(changeDestination){
+            //The 10000 loop below is the search algorithm in A*, checking unchecked neighbours of all the checked grid squares in order of their F value
             for (int m = 0; m < 10000; m++) {
 
+                //gathering all the neighbours/children of the last checked grid square, assigning their coordinates
                 Node child1 = new Node(current.getXcoords() + 1, current.getYcoords(), current);
                 Node child2 = new Node(current.getXcoords() + 1, current.getYcoords() + 1, current);
                 Node child3 = new Node(current.getXcoords(), current.getYcoords() + 1, current);
@@ -409,6 +439,8 @@ public class Agent {
                 Node child6 = new Node(current.getXcoords() - 1, current.getYcoords() - 1, current);
                 Node child7 = new Node(current.getXcoords(), current.getYcoords() - 1, current);
                 Node child8 = new Node(current.getXcoords() + 1, current.getYcoords() - 1, current);
+
+                //An ugly amount of local booleans, but it was a last resort, more on them below
                 boolean one = true;
                 boolean two = true;
                 boolean three = true;
@@ -418,7 +450,7 @@ public class Agent {
                 boolean seven = true;
                 boolean eight = true;
 
-
+                //Each of the above 8 nodes is checked to see if its coordinates already exist in the "coordList"s
                 for (int n = 0; n < coordListX.size(); n++) {
                     if (child1.getXcoords() == coordListX.get(n) && child1.getYcoords() == coordListY.get(n)) {
                         one = false;
@@ -446,6 +478,7 @@ public class Agent {
                     }
                 }
 
+                //if a Node's coordinates already exist in coordList, or the Node is actually a wall, it is not accepted as a child of the current Node
                 if (world[child1.getXcoords()][child1.getYcoords()] != 9 && one) {
                     current.addChild(child1);
                 }
@@ -476,45 +509,73 @@ public class Agent {
                 coordListX.add(current.getXcoords());
                 coordListY.add(current.getYcoords());
                 closedlist.add(openlist.remove(current));
+
+                //Each recent accepted child is checked in this loop below:
                 for (int i = 0; i < children.size(); i++) {
+                    //If the child grid square contains the destination then this happens
                     if (((Node) (children.get(i))).getXcoords() == gridObjX && ((Node) (children.get(i))).getYcoords() == gridObjY) {
-                        pathFound = false;
                         System.out.println("end found");
+                        //The current node is made into pathNode the first element in the "path" arraylist
                         Node pathNode = ((Node) (children.get(i)));
+
+                        //This while loop retrieves the parent of each node, all the way back to the starting coordinates
                         while (pathNode.getXcoords() != gridX || pathNode.getYcoords() != gridY) {
                             path.add(pathNode);
                             pathNode = pathNode.getParent();
                         }
+                        //Now we have a path arraylist that starts at the destination, and ends at the current position of the agent/start
+
+                        //Here we just reverse path so that we get a inverse path that starts at the start and ends at the destination
                         ArrayList inversePath = new ArrayList();
                         for (int k = path.size()-1; k > -1; k--) {
                             inversePath.add(path.get(k));
 
                         }
                         inversePath.add(new Node(gridObjX,gridObjY));
+
+                        //Make inversePath our currentPath
                         currentPath = inversePath;
                         pathPlace = 0;
+
+                        //The Movement, telling the agent to move to the next grid square in the path
                         headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
-                        //directLine(inversePath);
+
+//                        directLine(currentPath);
+//                        headTo(directCoords[0], directCoords[1]);
                         return true;
                     }
+                    //The rest of the algorithm below only takes place if the destination has not been found yet
+
+                    //New G, H, and F values are assigned to the recently accepted children
                     ((Node) (children.get(i))).setG(Math.abs((((Node) (children.get(i))).getXcoords() - gridX)) + Math.abs((((Node) (children.get(i))).getYcoords() - gridY)));
 
                     ((Node) (children.get(i))).setH(Math.abs((((Node) (children.get(i))).getXcoords() - gridObjX)) + Math.abs((((Node) (children.get(i))).getYcoords() - gridObjY)));
+
+
                     coordListX.add(((Node) (children.get(i))).getXcoords());
                     coordListY.add(((Node) (children.get(i))).getYcoords());
+
+                    //the children are added to the openlist
                     openlist.add(children.get(i));
                 }
+
+                //The loop below is used to determine which Node in the openlist should have its children investigated next
                 for (int i = 0; i < openlist.size(); i++) {
+
+                    //The next best Node is of course the one with the lowest F value
                     if (((Node) (openlist.get(i))).getF() < min) {
 
                         //System.out.println(((Node) (openlist.get(i))).getXcoords() + "," + ((Node) (openlist.get(i))).getYcoords());
                         //System.out.println(((Node) (openlist.get(i))).getF());
+
+                        //The next best Node is made into current and the 10000 loop starts again with this Node as current
                         current = ((Node) (openlist.get(i)));
                         min = ((Node) (openlist.get(i))).getF();
                     }
                 }
 
             }
+            //If the destination has not been found by the end of the 10000 loop, it is likely the destination cannot be reached at all
             if(!pathFound){
                 System.out.println("no path found");
                 return false;
@@ -530,17 +591,19 @@ public class Agent {
             }
         }
         catch (NullPointerException exception){
+            //If the currentPath still hasn't been instantiated, it is likely the destination cannot be reached at all
             System.out.println("Destination completely isolated, terminating search");
             return false;
         }
 
-
-
+        //if the agent is less than a grid square away from the destination, then head straight to it.
         if(Math.abs(this.getX()-objx)<10 && Math.abs(this.getY()-objy)<10){
             headTo(objx,objy);
         }
         else {
+            //Some more bug evasion here
             headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
+            //directLine(currentPath);
         }
         return true;
     }
@@ -548,7 +611,8 @@ public class Agent {
 
 
 
-    public void directLine(ArrayList givenPath){
+    public float[] directLine(ArrayList givenPath){
+        float[] coords = new float[2];
         for (int i = givenPath.size()-1; i > 0; i--) {
             if(probeLine(((Node)(givenPath.get(i))).getXcoords()*10, ((Node)(givenPath.get(i))).getYcoords()*10)){
                 xDir = ((Node)(givenPath.get(i))).getXcoords()*10;
@@ -557,7 +621,9 @@ public class Agent {
             }
         }
         System.out.println(xDir + "   " + yDir);
-        headTo(xDir+5,yDir+5);
+        coords[0] = xDir;
+        coords[1] = yDir;
+        return coords;
     }
 
     public boolean probeLine(float tX, float tY){

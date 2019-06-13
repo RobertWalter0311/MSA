@@ -87,6 +87,7 @@ public class Guard extends Agent {
             }
         }
         catch (IndexOutOfBoundsException exception){
+            System.out.println("for some reason, out of bounds");
             move();
         }
 //        else if(i<waypoints.size() - 1){
