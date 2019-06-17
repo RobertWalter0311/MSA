@@ -30,8 +30,11 @@ public class Agent {
     public float audioRadius = 20;
     private float xDir = 0;
     private float yDir = 0;
+    float coords[] = {500,500};
+    int directState = 0;
     private ArrayList currentPath;
     int pathPlace = 0;
+
     private ArrayList agentList;
 
 
@@ -538,9 +541,9 @@ public class Agent {
                         pathPlace = 0;
 
                         //The Movement, telling the agent to move to the next grid square in the path
-                        headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
+                        //headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
 
-//                        directLine(currentPath);
+                        directLine(currentPath);
 //                        headTo(directCoords[0], directCoords[1]);
                         return true;
                     }
@@ -602,7 +605,22 @@ public class Agent {
         }
         else {
             //Some more bug evasion here
-            headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
+
+            if(probeLine(((Node) (currentPath.get(pathPlace+2))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace+2))).getYcoords() * 10)) {
+                coords = directLine(currentPath);
+                headTo(coords[0], coords[1]);
+            }
+            else {
+                headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
+            }
+//            if(changeTile || (Math.abs(this.getX()-coords[0])<10 && Math.abs(this.getY()-coords[1])<10)) {
+//                float[] tempCoordinates = directLine(currentPath);
+//
+//                coords = tempCoordinates;
+//
+
+
+            //headTo(coords[0], coords[1]);
             //directLine(currentPath);
         }
         return true;
@@ -612,7 +630,7 @@ public class Agent {
 
 
     public float[] directLine(ArrayList givenPath){
-        float[] coords = new float[2];
+        float[] coordinates = new float[2];
         for (int i = givenPath.size()-1; i > 0; i--) {
             if(probeLine(((Node)(givenPath.get(i))).getXcoords()*10, ((Node)(givenPath.get(i))).getYcoords()*10)){
                 xDir = ((Node)(givenPath.get(i))).getXcoords()*10;
@@ -621,9 +639,9 @@ public class Agent {
             }
         }
         System.out.println(xDir + "   " + yDir);
-        coords[0] = xDir;
-        coords[1] = yDir;
-        return coords;
+        coordinates[0] = xDir;
+        coordinates[1] = yDir;
+        return coordinates;
     }
 
     public boolean probeLine(float tX, float tY){
