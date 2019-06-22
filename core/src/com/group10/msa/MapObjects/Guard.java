@@ -9,11 +9,19 @@ public class Guard extends Agent {
 
     private float direction;
     ArrayList<Tuple> waypoints = new ArrayList<Tuple>();
-    private int i = 2;
+    private int i = 0;
     private boolean firstTime = true;
     private int[][] world;
-    private int[][] coverageWorld;
+    private int[][] coverageWorld = new int[80][80];
     private ArrayList agentList;
+    private Radio radio = new Radio();
+    private double timeStart = 0;
+    private boolean isInTower = false;
+    public static boolean directComms = true;
+    public static ArrayList<GuardTrail> trailList = new ArrayList<GuardTrail>();
+    private double startTime = System.currentTimeMillis();
+
+
 
     class Tuple {
         float waypointX, waypointY;
@@ -29,7 +37,8 @@ public class Guard extends Agent {
         this.world = world;
         this.direction = startDir;
 
-        randomWaypoints();
+        //randomWaypoints();
+        distributedWaypoints();
         //trafficWaypoints();
     }
 
@@ -38,18 +47,21 @@ public class Guard extends Agent {
         if(firstTime){
              //coverageWorld = new int[world[0].length][world.length];
         }
-        if(agentTracker()){
-
-        }
-        else {
 
 
+            speed = 1.4f;
+
+//        if(agentTracker()){
+//
+//        }
+//        else {
             //createCoverage();
 //        if(!inProximity(35, 35)) {
 //            aStarHeadTo(35, 35);
 //        }
             patrol();
-        }
+            createCoverage();
+        //}
         setAudioRadius();
         firstTime = false;
     }
@@ -57,8 +69,8 @@ public class Guard extends Agent {
     public void createCoverage(){
         int currentX = (int)((this.getX()+5)/10);
         int currentY = (int)((this.getY()+5)/10);
-        for (int j = -4; j < 5; j++) {
-            for (int k = -4; k < 5; k++) {
+        for (int j = -9; j < 10; j++) {
+            for (int k = -9; k < 10; k++) {
                 if(currentX + k < coverageWorld[0].length && currentX + k >= 0 && currentY + j < coverageWorld.length && currentY + j >= 0){
                     coverageWorld[currentX+k][currentY+j] = 1;
                 }
@@ -73,6 +85,7 @@ public class Guard extends Agent {
             }
         }
         System.out.println(amount);
+        System.out.println(System.currentTimeMillis() - startTime);
     }
 
     public void patrol(){
@@ -83,7 +96,8 @@ public class Guard extends Agent {
                 }
             }
             else{
-                i = (int)((waypoints.size()-1)*Math.random());
+                //i = (int)((waypoints.size()-1)*Math.random());
+                i++;
             }
         }
         catch (IndexOutOfBoundsException exception){
@@ -117,6 +131,17 @@ public class Guard extends Agent {
         }
 //        placeWaypoint(10,5);
 //        placeWaypoint(50,70);
+    }
+
+    public void distributedWaypoints(){
+        for (int j = 2; j < world.length-2; j++) {
+            for (int k = 2; k < world[0].length-2; k++) {
+                if(j%10==0 && k%10==0 && world[k][j] != 9){
+                    System.out.println("place waypoint" + k + " " + j);
+                    placeWaypoint(k,j);
+                }
+            }
+        }
     }
 
     public void trafficWaypoints() {
@@ -259,17 +284,118 @@ public class Guard extends Agent {
             for (int j = 0; j < agentList.size(); j++) {
                 System.out.println("Agents:");
                 System.out.println(((Agent)(agentList.get(j))).getX() + "      " + ((Agent)(agentList.get(j))).getY());
-                if(radiusDetection(this, ((Agent)(agentList.get(j))))){
+                if(radiusDetection(this, ((Agent)(agentList.get(j)))) && (agentList.get(j)) instanceof Intruder){
                     System.out.println("found agent");
-                    aStarHeadTo(((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY());
-                    if(Math.abs(((Agent)(agentList.get(j))).getX()-this.getX()) <0.5 && Math.abs(((Agent)(agentList.get(j))).getY()-this.getY()) < 0.5){
+
+
+                    if(directComms) {
+                        alertMessage(((Agent) (agentList.get(j))).getX(), ((Agent) (agentList.get(j))).getY());
+
+
+                        if (probeLine(radio.getPos()[0], radio.getPos()[1])) {
+                            swerveTo(radio.getPos()[0], radio.getPos()[1]);
+                        } else {
+                            aStarHeadTo(radio.getPos()[0], radio.getPos()[1]);
+                        }
+                    }
+
+                    else if(!directComms){
+                        GuardTrail trailNode = new GuardTrail(this, this.getX(), this.getY());
+
+                        trailList.add(trailNode);
+
+                        if (probeLine(((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY())) {
+                            swerveTo(((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY());
+                        } else {
+                            aStarHeadTo(((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY());
+                        }
+                    }
+                    if(Math.abs(((Agent)(agentList.get(j))).getX()-this.getX()) <1 && Math.abs(((Agent)(agentList.get(j))).getY()-this.getY()) < 1){
                         System.out.println("Agent caught");
-                        System.exit(-1);
+                        //System.exit(-1);
                     }
                     return true;
                 }
             }
         }
+        if(directComms) {
+            if (radio.getAlert()) {
+                System.out.println("head to reported position");
+                if (probeLine(radio.getPos()[0], radio.getPos()[1])) {
+                    swerveTo(radio.getPos()[0], radio.getPos()[1]);
+                } else {
+                    aStarHeadTo(radio.getPos()[0], radio.getPos()[1]);
+                }
+                return true;
+            }
+        }
+        else if(!directComms){
+            if(lookForTrail()) {
+                return true;
+            }
+        }
+
         return false;
+    }
+
+    public void alertMessage(float xpos, float ypos){
+        float[] xyPos = {xpos, ypos};
+
+        radio.setPos(xyPos);
+        radio.setAlert(true);
+    }
+
+
+
+    public void inTower(){
+        speed = 0;
+    }
+
+    public boolean lookForTrail(){
+        GuardTrail maxNumber = new GuardTrail(this, -1000, -1000);
+        maxNumber.setNumber(-1);
+        for (int j = 0; j < trailList.size(); j++) {
+            if(Math.abs(trailList.get(j).getX()-this.getX()) <100 && Math.abs(trailList.get(j).getY()-this.getY()) <100 && trailList.get(j).isExplored() == false && trailList.get(j).getTheGuard()!=this){
+                System.out.println("Found trail");
+                if(trailList.get(j).getNumber() > maxNumber.getNumber()){
+                    maxNumber = trailList.get(j);
+                    trailList.get(j).setExplored();
+                }
+            }
+        }
+        if(maxNumber.getX()>-1) {
+            if (probeLine(maxNumber.getX(), maxNumber.getY())) {
+                swerveTo(maxNumber.getX(), maxNumber.getY());
+                return true;
+            } else {
+                aStarHeadTo(maxNumber.getX(), maxNumber.getY());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void enterTower(){
+        double nowTime = System.currentTimeMillis();
+
+        if(timeStart == 0){
+            timeStart = nowTime;
+        }
+        else if(nowTime-timeStart>3000) {
+            isInTower = true;
+            timeStart = 0;
+        }
+    }
+
+    public void exitTower(){
+        double nowTime = System.currentTimeMillis();
+
+        if(timeStart == 0){
+            timeStart = nowTime;
+        }
+        else if(nowTime-timeStart>3000) {
+            isInTower = false;
+            timeStart = 0;
+        }
     }
 }

@@ -9,9 +9,9 @@ public class Intruder extends Agent {
     public void plan() {
 
 
-//        if(!inProximity(200, 50)) {
-//            aStarHeadTo(200, 50);
-//        }
+        if(!inProximity(340, 600)) {
+            aStarHeadTo(340, 600);
+        }
         setAudioRadius();
 
     }

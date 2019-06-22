@@ -141,12 +141,16 @@ public class GameScreen implements Screen{
 					}
 				}
 				layers.add(layer);
-			Intruder agent1 = new Intruder(700,700, (float)(Math.PI),world);
-			Guard agent2 = new Guard(15,365, (float)(Math.PI/2), world);
-			agents.add(agent1);
+			Intruder agent1 = new Intruder(15,15, (float)(Math.PI),world);
+			Guard agent2 = new Guard(15,15, (float)(Math.PI/2), world);
+            Guard agent3 = new Guard(600,20, (float)(Math.PI/2), world);
+
+            //agents.add(agent1);
 			agents.add(agent2);
+            //agents.add(agent3);
 			agent1.speed = (1.4f);
             agent2.speed = (1.4f);
+            agent3.speed = (1.4f);
 			Vector2 v1 = new Vector2(300,600);
             Vector2 v2 = new Vector2(400,400);
             target1 = new TargetArea(Target, v1);
