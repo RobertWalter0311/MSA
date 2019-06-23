@@ -11,17 +11,17 @@ public class Guard extends Agent {
     ArrayList<Tuple> waypoints = new ArrayList<Tuple>();
     private int i = 0;
     private boolean firstTime = true;
-    private boolean explored = false;
     private int[][] world;
     private int[][] coverageWorld = new int[80][80];
     private ArrayList agentList;
+    private boolean explored = false;
     private Radio radio = new Radio();
     private double timeStart = 0;
     private boolean isInTower = false;
     public static boolean directComms = true;
     public static ArrayList<GuardTrail> trailList = new ArrayList<GuardTrail>();
     private double startTime = System.currentTimeMillis();
-    public int ans[]= new int[2];
+
 
 
 
@@ -46,26 +46,10 @@ public class Guard extends Agent {
 
     @Override
     public void plan() {
-
-        if(!explored){
-            if(bruteExplore()){
-                explored = true;
-            }
-        }
-
-        for (int j = 0; j <agentsworld[0].length ; j++) {
-            for (int k = 0; k < agentsworld.length; k++) {
-                System.out.print(agentsworld[k][j]);
-            }
-            System.out.println();
-        }
-
-
-
-        /*if(firstTime){
+        if(firstTime){
              //coverageWorld = new int[world[0].length][world.length];
         }
-
+        bruteExplore();
 
             speed = 1.4f;
 
@@ -77,11 +61,11 @@ public class Guard extends Agent {
 //        if(!inProximity(35, 35)) {
 //            aStarHeadTo(35, 35);
 //        }
-            patrol();
-            createCoverage();
+//            patrol();
+//            createCoverage();
         //}
         setAudioRadius();
-        firstTime = false;*/
+        firstTime = false;
     }
 
     public void createCoverage(){
@@ -230,7 +214,7 @@ public class Guard extends Agent {
             }
             large[j] = max;
             array[index[0]][index[1]] = Integer.MIN_VALUE;
-            
+
             System.out.println("Largest " + j +  ": " + large[j]);
             indices[j][0] = index[0];
             indices[j][1] = index[1];
@@ -416,6 +400,125 @@ public class Guard extends Agent {
             timeStart = 0;
         }
     }
+
+    public boolean loopExplore() {
+
+        int posX = Math.round(this.getX() / 10);
+        int posY = Math.round(this.getY() / 10);
+
+
+//        int h = 3;
+//
+//        int tempI = posX - h;
+//        if (tempI < 1)
+            int tempI = 0;
+//
+//        int rangeI = posX + h;
+//        if (rangeI > 78)
+            int rangeI = 79;
+
+//        int tempJ = posY - h;
+//        if (tempJ < 1)
+            int tempJ = 0;
+
+//        int rangeJ = posY + h;
+//        if (rangeJ > 78)
+            int rangeJ = 79;
+
+
+        for (int i = tempI; i < rangeI; i++) {
+            for (int j = tempJ; j < rangeJ; j++) {
+
+
+                //System.out.println(h);
+                if (coverageWorld[j][i] == 0) {
+
+                    int k = i * 10;
+                    if (k <= 10)
+                        k = 11;
+                    System.out.println("k " + k);
+                    int l = j * 10;
+                    if (l <= 10)
+                        l = 11;
+                    System.out.println("l " + l);
+                    if(world[j][i] != 9) {
+                        if (!inProximity(l, k)) {
+                            aStarHeadTo(l, k);
+
+
+                        }
+
+                            System.out.println("make 1");
+                        if(inProximity(l, k)) {
+                            coverageWorld[j][i] = 1;
+                        }
+                        int count = 0;
+
+                        for (int m = 0; m < world.length; m++) {
+                            for (int n = 0; n < world[0].length; n++) {
+                                System.out.print(agentsworld[n][m] + " ");
+                            }
+                            System.out.println();
+                        }
+
+                        System.out.println("____________________________________________");
+                        for (int m = 0; m < world[0].length; m++) {
+
+                                for (int n = 0; n < world.length; n++) {
+                                    if((m>0 && m<79) || (n>0 && n<79)){
+                                        count++;
+                                        if(coverageWorld[n][m] == 1 || world[n][m] == 9){
+                                            count--;
+                                        }
+                                    }
+                                    else{
+                                        coverageWorld[n][m] = 1;
+                                    }
+
+
+                                    float[] target = {10*n, 10*m};
+                                    float[] currentPos = {this.getX(), this.getY()};
+                                    float[][] visionCorners = vision();
+                                    float[] b = {visionCorners[1][0], visionCorners[1][1]};
+                                    float[] c = {visionCorners[2][0], visionCorners[2][1]};
+
+                                    if(isInVisionField(target, currentPos, c, b)){
+                                        coverageWorld[n][m] = 1;
+                                    }
+                                    System.out.print(coverageWorld[n][m] + " ");
+                                }
+                                System.out.println();
+
+
+
+
+                        }
+                        System.out.println("count " + count);
+                        if(count <=1) {
+                            System.out.println("It's done >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ;)");
+                            agentsworld = fillInBlanks(agentsworld);
+                            return true;
+                        }
+                        else{
+                            return false;
+                        }
+                    }
+                    else{
+
+                        System.out.println("wall");
+                        coverageWorld[j][i] = 1;
+                    }
+                } else {
+                    //h++;
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+
 
     public boolean bruteExplore() {
 
