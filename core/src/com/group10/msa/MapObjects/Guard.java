@@ -11,6 +11,7 @@ public class Guard extends Agent {
     ArrayList<Tuple> waypoints = new ArrayList<Tuple>();
     private int i = 0;
     private boolean firstTime = true;
+    private boolean explored = false;
     private int[][] world;
     private int[][] coverageWorld = new int[80][80];
     private ArrayList agentList;
@@ -20,6 +21,7 @@ public class Guard extends Agent {
     public static boolean directComms = true;
     public static ArrayList<GuardTrail> trailList = new ArrayList<GuardTrail>();
     private double startTime = System.currentTimeMillis();
+    public int ans[]= new int[2];
 
 
 
@@ -44,7 +46,23 @@ public class Guard extends Agent {
 
     @Override
     public void plan() {
-        if(firstTime){
+
+        if(!explored){
+            if(bruteExplore()){
+                explored = true;
+            }
+        }
+
+        for (int j = 0; j <agentsworld[0].length ; j++) {
+            for (int k = 0; k < agentsworld.length; k++) {
+                System.out.print(agentsworld[k][j]);
+            }
+            System.out.println();
+        }
+
+
+
+        /*if(firstTime){
              //coverageWorld = new int[world[0].length][world.length];
         }
 
@@ -63,7 +81,7 @@ public class Guard extends Agent {
             createCoverage();
         //}
         setAudioRadius();
-        firstTime = false;
+        firstTime = false;*/
     }
 
     public void createCoverage(){
@@ -398,4 +416,143 @@ public class Guard extends Agent {
             timeStart = 0;
         }
     }
+
+    public boolean bruteExplore() {
+
+        int posX = Math.round(this.getX() / 10);
+        int posY = Math.round(this.getY() / 10);
+
+        double distance = 30000;
+        int minDX = 69;
+        int minDY = 69;
+
+
+//        int h = 3;
+//
+//        int tempI = posX - h;
+//        if (tempI < 1)
+        int tempI = 0;
+//
+//        int rangeI = posX + h;
+//        if (rangeI > 78)
+        int rangeI = 79;
+
+//        int tempJ = posY - h;
+//        if (tempJ < 1)
+        int tempJ = 0;
+
+//        int rangeJ = posY + h;
+//        if (rangeJ > 78)
+        int rangeJ = 79;
+        int count = 0;
+
+        for (int g = tempI; g < rangeI; g++) {
+            for (int j = tempJ; j < rangeJ; j++) {
+
+                float tempX = Math.abs(j-(this.getX()/10));
+                float tempY = Math.abs(g-(this.getY()/10));
+
+                double tempDistance = Math.sqrt((tempX*tempX)+(tempY*tempY));
+                System.out.print(tempDistance + " ");
+
+                if((j>0 && j<79)&&(g>0 && j<79)){
+                if (tempDistance<distance && coverageWorld[j][g]==0 && world[j][g] != 9){
+                    distance = tempDistance;
+                    //System.out.println("I liike jeff");
+                    minDX=j;
+                    minDY=g;
+
+                }
+                }
+
+                if(agentsworld[j][g] == 0){
+                    count++;
+                }
+                //System.out.println(h);
+                //if (coverageWorld[j][i] == 0) {
+
+                    int k = g * 10;
+                    if (k <= 10)
+                        k = 11;
+                    //System.out.println("k " + k);
+                    int l = j * 10;
+                    if (l <= 10)
+                        l = 11;
+                    //System.out.println("l " + l);
+
+
+
+                        //for (int m = 0; m < world.length; m++) {
+                            //for (int n = 0; n < world[0].length; n++) {
+                              //  System.out.print(agentsworld[n][m] + " ");
+                            //}
+                            //System.out.println();
+                        //}
+
+                        //System.out.println("________________");
+
+
+
+
+                                float[] target = {10*j, 10*g};
+                                float[] currentPos = {this.getX(), this.getY()};
+                                float[][] visionCorners = vision();
+                                float[] b = {visionCorners[1][0], visionCorners[1][1]};
+                                float[] c = {visionCorners[2][0], visionCorners[2][1]};
+
+                                if(isInVisionField(target, currentPos, c, b)) {
+                                    coverageWorld[j][g] = 1;
+                                }
+
+
+
+
+
+                //} else {
+                    //h++;
+                //}
+            }
+            System.out.println();
+        }
+        System.out.println("count " + count);
+        if(count <=1) {
+            System.out.println("It's done >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ;)");
+            agentsworld = fillInBlanks(agentsworld);
+            return true;
+        }
+        else{
+        }
+        if (!inProximity(minDX*10, minDY*10)) {
+            System.out.println("Current destination: " + minDX + " , " + minDY + "    " + distance);
+            if(probeLine(minDX*10, minDY*10)){
+                swerveTo(minDX*10, minDY*10);
+            }
+            else {
+                aStarHeadTo(minDX * 10, minDY * 10);
+            }
+
+        }
+
+        System.out.println("make 1");
+
+        if(inProximity(minDX*10, minDY*10)) {
+            coverageWorld[minDX][minDY] = 1;
+        }
+        return false;
+    }
+
+    public int[][] fillInBlanks(int[][] givenWorld){
+        for (int j = 0; j < givenWorld[0].length; j++) {
+            for (int k = 0; k < givenWorld.length; k++) {
+                if(givenWorld[k][j] == 0){
+                    givenWorld[k][j] = 9;
+                }
+                System.out.print(givenWorld[k][j]);
+            }
+            System.out.println();
+        }
+
+        return givenWorld;
+    }
+
 }

@@ -41,6 +41,7 @@ public class Agent {
 
 
     public int[][] agentsworld = new int[80][80];
+
     public Agent(float xStart, float yStart, float startDir,int[][] world){
         this.x = xStart;
         this.y = yStart;
@@ -371,6 +372,7 @@ public class Agent {
             return true;
         }
         System.out.println("Start path-finding>>>>>");
+
         boolean changeTile = false;
         boolean changeDestination = false;
         float[] directCoords = new float[2];
@@ -962,13 +964,15 @@ public class Agent {
 
 
     }
-    public void swerveTo(float xPos, float yPos){
+    public void swerveTo(float xPos, float yPos) {
 
 
-        if(Math.abs(direction - getAngle(xPos,yPos)) > 0) {
-            turn(getAngle(xPos,yPos));
+        if (Math.abs(direction - getAngle(xPos, yPos)) > 0) {
+            turn(getAngle(xPos, yPos));
         }
-        move();
+        if (Math.abs(direction - getAngle(xPos, yPos)) < Math.PI / 8){
+            move();
+    }
 
     }
 
@@ -1026,48 +1030,57 @@ public class Agent {
 
         return vision;
     }
-    public ArrayList<float[]> visionField(float[][] vision){
+
+    public ArrayList<float[]> visionField(float[][] vision) {
         //System.out.println(" x " + this.x + " y " + this.y);
         //find biggest and smallest x,y values
         int maxX = 0, maxY = 0;
         int minX = 79, minY = 79;
-        for(float[] i : vision) {
+        for (float[] i : vision) {
             if (((int) i[1] / 10) > maxY) maxY = ((int) i[1] / 10);
             if (((int) i[1] / 10) < minY) minY = ((int) i[1] / 10);
             if (((int) i[0] / 10) > maxX) maxX = ((int) i[0] / 10);
             if (((int) i[0] / 10) < minX) minX = ((int) i[0] / 10);
+            if ((int) x / 10 < minX) minX = (int) x / 10;
+            if ((int) x / 10 > maxX) maxX = (int) x / 10;
+            if ((int) y / 10 < minY) minY = (int) y / 10;
+            if ((int) y / 10 > maxY) maxY = (int) y / 10;
+
         }
         ArrayList<float[]> points = new ArrayList<float[]>();
-        maxX += 1;
-        maxY +=1;
+        // maxX += 1;
+        //maxY +=1;
         //System.out.println("minx "+ minX + " miny " + minY + " maxx " + maxX + " maxy " +maxY );
         //starting from the smallest
-        agentsVision = new int[maxY-minY+1][maxX-minX+1];
+        agentsVision = new int[maxX - minX + 1][maxY - minY + 1];
+        System.out.println("I am here " + ((int) (this.getX() / 10)) + " " + ((int) (this.getY() / 10)));
+        agentsVision[(int) (x / 10) - minX][(int) (y / 10) - minY] = 6;
+        agentsworld[(int) (x / 10)][(int) (y / 10)] = 6;
         int count = 0;
-        for(int i = maxY; i >= minY;i--){
-            for(int j = maxX; j >= minX;j--){
-                float[] p= {j*10,i*10};
+        for (int j = maxY; j >= minY; j--) {
+            for (int i = maxX; i >= minX; i--) {
+                float[] p = {i * 10, j * 10};
                 //System.out.println(p[0] + " "+ p[1]);
-                if(p[0]>=0 &&p[0] < 800 && p[1] >=0 && p[1] < 800 &&
-                        isInVisionField(p, vision[0], vision[1],vision[2])){
-                    agentsVision[i-minY][j-minX] = world[i][j];
+                if (p[0] >= 0 && p[0] < 800 && p[1] >= 0 && p[1] < 800 &&
+                        isInVisionField(p, vision[0], vision[1], vision[2])) {
+                    agentsVision[i - minX][j - minY] = world[i][j];
                     agentsworld[i][j] = world[i][j];
                     count++;
                     points.add(p);
                 }
             }
         }
-        for(int i = 0; i < agentsVision.length; i++){
-            for(int j = 0; j < agentsVision[0].length;j++){
-                if(agentsVision[i][j] == 0){
-                    for(int k = 0; k < 10; k++){
-                        for(int l = 0; l < 10; l++){
-                            float[] p = {(((minX+j)*10)+k),(((minY+i)*10)+l)};
-                            if(p[0]>=0 &&p[0] < 800 && p[1] >=0 && p[1] < 800 &&isInVisionField(p, vision[0],vision[1], vision[2])){
-                                agentsVision[i][j] = world[minY+i][minX+j];
-                                agentsworld[minY+i][minX+j] = world[minY+i][minX+j];
+        for (int i = 0; i < agentsVision.length; i++) {
+            for (int j = 0; j < agentsVision[0].length; j++) {
+                if (agentsVision[i][j] == 0) {
+                    for (int k = 0; k < 10; k++) {
+                        for (int l = 0; l < 10; l++) {
+                            float[] p = {(((minX + i) * 10) + k), (((minY + j) * 10) + l)};
+                            if (p[0] >= 0 && p[0] < 800 && p[1] >= 0 && p[1] < 800 && isInVisionField(p, vision[0], vision[1], vision[2])) {
+                                agentsVision[i][j] = world[minX + i][minY + j];
+                                agentsworld[minX + i][minY + j] = world[minX + i][minY + j];
                                 k = 10;
-                                l=10;
+                                l = 10;
                                 count++;
                                 points.add(p);
                             }
@@ -1076,17 +1089,11 @@ public class Agent {
                 }
             }
         }
-        //agentsVision[((int)vision[0][1]/10)-minY][((int)vision[0][0]/10)-minX] = 6;
-        //System.out.println("Direction" + direction);
-        /*for(int i = 0; i < agentsVision.length;i++){
-            for(int j = 0; j < agentsVision[0].length; j++){
-                System.out.print(agentsVision[i][j]);
-            }
-            System.out.println();
-        }*/
-        collisionDetection(agentsVision,minX,minY);
+
+        collisionDetection(agentsVision, minX, minY);
         return points;
     }
+
     public boolean isInVisionField(float[] point, float[]a,float[]b, float[] c){
         //vector from a to point, normalized to length 1
         float[] a_point = {(point[0]-a[0]),(point[1]-a[1])};
@@ -1213,6 +1220,8 @@ public class Agent {
 //            }
 //            System.out.println();
 //        }
+        aStarHeadTo(50,100);
+
         setAudioRadius();
         //
 
@@ -1233,5 +1242,7 @@ public class Agent {
         else return false;
 
     }
+
+
 
 }
