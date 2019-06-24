@@ -34,13 +34,13 @@ public class GameScreen implements Screen{
 
     final MAS game;
 
-	private Texture towerImg;
-	private TiledMap map;
-	private TiledMapRenderer renderer;
-	private OrthographicCamera camera;
-	private AssetManager assetManager;
-	private Texture grass;
-	private Texture dirt;
+    private Texture towerImg;
+    private TiledMap map;
+    private TiledMapRenderer renderer;
+    private OrthographicCamera camera;
+    private AssetManager assetManager;
+    private Texture grass;
+    private Texture dirt;
     private Texture target;
     private Texture wall;
     private Texture sand;
@@ -48,19 +48,19 @@ public class GameScreen implements Screen{
     private Texture tower;
     private Texture tree;
     //private Texture agent;
-	private Texture texture;
-	private BitmapFont font;
-	private SpriteBatch batch;
+    private Texture texture;
+    private BitmapFont font;
+    private SpriteBatch batch;
     private float rotationSpeed;
-	//private Sprite sprite;
-	public int[][] world;
-	private ShapeRenderer shapeRenderer = new ShapeRenderer();
-	private ArrayList<Agent> agents = new ArrayList<Agent>();
+    //private Sprite sprite;
+    public int[][] world;
+    private ShapeRenderer shapeRenderer = new ShapeRenderer();
+    private ArrayList<Agent> agents = new ArrayList<Agent>();
     private TargetArea target1;
     private TargetArea target2;
-	private int frameRate = 0;
+    private int frameRate = 0;
 
-	public final float WALK = (float)1.4;
+    public final float WALK = (float)1.4;
     public final float SPRINT = (float)3;
 
     public GameScreen(final MAS game) {
@@ -83,12 +83,12 @@ public class GameScreen implements Screen{
         camera.setToOrtho(false, 800, 800);
         camera.update();
         //creates new batch, we could also use the static public batch from menuscreen
-		batch = new SpriteBatch();
+        batch = new SpriteBatch();
 
-		{
-			//
+        {
+            //
             Map mapA = new Map();
-			//world = defaultWorld();//new int[80][80];
+            //world = defaultWorld();//new int[80][80];
 			/*for(int i = 0; i < world.length; i++){
 			    for(int j = 0; j < world[0].length; j++){
 			        double rando =  Math.random();
@@ -98,12 +98,12 @@ public class GameScreen implements Screen{
                 }
             }*/
 
-			//Comment the line below to randomize again
-			world = mapA.getMapArray();
+            //Comment the line below to randomize again
+            world = mapA.getMapArray();
 
-			TextureRegion tGrass = new TextureRegion(grass, 10,10);
-			TextureRegion tDirt = new TextureRegion(dirt, 10,10);
-			TextureRegion tWall = new TextureRegion(wall, 10,10);
+            TextureRegion tGrass = new TextureRegion(grass, 10,10);
+            TextureRegion tDirt = new TextureRegion(dirt, 10,10);
+            TextureRegion tWall = new TextureRegion(wall, 10,10);
             TextureRegion tTarget = new TextureRegion(target, 10,10);
             TextureRegion tSand = new TextureRegion(sand, 10,10);
             TextureRegion tTower = new TextureRegion(tower, 10,10);
@@ -111,14 +111,14 @@ public class GameScreen implements Screen{
 
 
             map = new TiledMap();
-			MapLayers layers = map.getLayers();
-			TiledMapTileLayer layer = new TiledMapTileLayer(800, 800, 10, 10);
-			for (int x = 0; x < 80; x++) {
-				for (int y = 79; y >= 0; y--) {
-					Cell cell = new TiledMapTileLayer.Cell();
-					if(world[x][y] == 1){
-						cell.setTile(new StaticTiledMapTile(tTarget));}
-					else if (world[x][y] == 2) {
+            MapLayers layers = map.getLayers();
+            TiledMapTileLayer layer = new TiledMapTileLayer(800, 800, 10, 10);
+            for (int x = 0; x < 80; x++) {
+                for (int y = 79; y >= 0; y--) {
+                    Cell cell = new TiledMapTileLayer.Cell();
+                    if(world[x][y] == 1){
+                        cell.setTile(new StaticTiledMapTile(tTarget));}
+                    else if (world[x][y] == 2) {
                         cell.setTile(new StaticTiledMapTile(tGrass));
                     }
                     else if (world[x][y] == 3) {
@@ -133,41 +133,40 @@ public class GameScreen implements Screen{
                     else if (world[x][y] == 8) {
                         cell.setTile(new StaticTiledMapTile(tTree));
                     }
-						else {
-							//System.out.println("im here fam");
-							cell.setTile(new StaticTiledMapTile(tWall));
-						}
-						layer.setCell(x, y, cell);
-					}
-				}
-				layers.add(layer);
-			Intruder agent1 = new Intruder(15,15, (float)(Math.PI),world);
-			Guard agent2 = new Guard(15,250, (float)(Math.PI/2), world);
-            Guard agent3 = new Guard(600,250, (float)(Math.PI/2), world);
+                    else {
+                        //System.out.println("im here fam");
+                        cell.setTile(new StaticTiledMapTile(tWall));
+                    }
+                    layer.setCell(x, y, cell);
+                }
+            }
 
-            //agents.add(agent1);
-			agents.add(agent2);
-            //agents.add(agent3);
-			agent1.speed = (1.4f);
+            layers.add(layer);
+            Intruder agent1 = new Intruder(600,650, (float)(Math.PI),world);
+            Guard agent2 = new Guard(330,400, (float)(Math.PI/2), world);
+            agents.add(agent1);
+            agents.add(agent2);
+            agent1.speed = (1.4f);
             agent2.speed = (1.4f);
-            agent3.speed = (1.4f);
-			Vector2 v1 = new Vector2(300,600);
+            Vector2 v1 = new Vector2(300,600);
             Vector2 v2 = new Vector2(400,400);
             target1 = new TargetArea(Target, v1);
             target2 = new TargetArea(Target, v2);
-		}
+            agent1.setAgentList(agents);
+            agent2.setAgentList(agents);
+        }
 
-		renderer = new OrthogonalTiledMapRenderer(map);
+        renderer = new OrthogonalTiledMapRenderer(map);
     }
 
-	@Override
-	public void dispose() {
-		batch.dispose();
+    @Override
+    public void dispose() {
+        batch.dispose();
 
-	}
+    }
 
-	@Override
-	public void render(float delta) {
+    @Override
+    public void render(float delta) {
         //manipulate camera eg. zoom
         handleInput();
         // tell the camera to update its matrices.
@@ -177,15 +176,15 @@ public class GameScreen implements Screen{
         // tell the SpriteBatch to render in the
         // coordinate system specified by the camera.
         game.batch.setProjectionMatrix(camera.combined);
-		if (Gdx.input.isTouched()) {
-			game.setScreen(new MenuScreen(game));
-			dispose();
-		}
-		Gdx.gl.glClearColor(2,2,2,1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if (Gdx.input.isTouched()) {
+            game.setScreen(new MenuScreen(game));
+            dispose();
+        }
+        Gdx.gl.glClearColor(2,2,2,1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		renderer.setView(camera);
-		renderer.render();
+        renderer.setView(camera);
+        renderer.render();
         batch.setProjectionMatrix(camera.combined);
 
         for(Agent agent: agents) {
@@ -200,7 +199,7 @@ public class GameScreen implements Screen{
             ArrayList newAgentList = new ArrayList();
             for(Agent otherAgents : agents){
                 if(agent != otherAgents){
-                    newAgentList.add(otherAgents);
+                    //newAgentList.add(otherAgents);
                 }
 
                 if(agent != otherAgents && radiusDetection(agent, otherAgents)){
@@ -216,10 +215,10 @@ public class GameScreen implements Screen{
                     shapeRenderer.end();
                 }
             }
-            agent.setAgentList(newAgentList);
+            //agent.setAgentList(newAgentList);
 
         }
-       // batch.end();
+        // batch.end();
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -277,7 +276,7 @@ public class GameScreen implements Screen{
         float effectiveViewportWidth = camera.viewportWidth * camera.zoom;
         float effectiveViewportHeight = camera.viewportHeight * camera.zoom;
 
-      //  camera.position.x = MathUtils.clamp(camera.position.x, effectiveViewportWidth / 2f, 800 - effectiveViewportWidth);
+        //  camera.position.x = MathUtils.clamp(camera.position.x, effectiveViewportWidth / 2f, 800 - effectiveViewportWidth);
         // camera.position.y = MathUtils.clamp(camera.position.y, effectiveViewportHeight / 2f, 480 - effectiveViewportHeight);
     }
 
@@ -291,20 +290,20 @@ public class GameScreen implements Screen{
     }
 
     @Override
-	public void resize(int width, int height) {
-       camera.viewportWidth = 800;
-       camera.viewportHeight = 480;
-       camera.update();
-	}
+    public void resize(int width, int height) {
+        camera.viewportWidth = 800;
+        camera.viewportHeight = 480;
+        camera.update();
+    }
 
-	@Override
-	public void pause() {
-	}
+    @Override
+    public void pause() {
+    }
 
-	@Override
-	public void resume() {
-	}
-	public boolean radiusDetection(Agent a1, Agent a2){
+    @Override
+    public void resume() {
+    }
+    public boolean radiusDetection(Agent a1, Agent a2){
         float[] vector = {(a2.getX()+5-(a1.getX()+5)), (a2.getY()+5-(a1.getY()+5))};
         float temp = (float) Math.sqrt(vector[0]*vector[0] + vector[1]*vector[1]);
         //System.out.println("vec length " +  temp + " rad " + a2.audioRadius);

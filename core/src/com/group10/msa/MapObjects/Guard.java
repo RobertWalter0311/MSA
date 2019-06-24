@@ -1,30 +1,16 @@
 package com.group10.msa.MapObjects;
 
 
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Timer;
 
 public class Guard extends Agent {
 
     private float direction;
     ArrayList<Tuple> waypoints = new ArrayList<Tuple>();
-    private int i = 0;
+    private int i = 2;
     private boolean firstTime = true;
     private int[][] world;
-    private int[][] coverageWorld = new int[80][80];
-    private ArrayList agentList;
-    private boolean explored = false;
-    private Radio radio = new Radio();
-    private double timeStart = 0;
-    private boolean isInTower = false;
-    public static boolean directComms = true;
-    public static ArrayList<GuardTrail> trailList = new ArrayList<GuardTrail>();
-    private double startTime = System.currentTimeMillis();
-
-
-
-
+    private int[][] coverageWorld;
     class Tuple {
         float waypointX, waypointY;
         Tuple(float waypointX, float waypointY){
@@ -38,41 +24,31 @@ public class Guard extends Agent {
         super(xStart, yStart, startDir,world);
         this.world = world;
         this.direction = startDir;
-
         //randomWaypoints();
-        distributedWaypoints();
         //trafficWaypoints();
     }
 
     @Override
     public void plan() {
         if(firstTime){
-             //coverageWorld = new int[world[0].length][world.length];
+            //coverageWorld = new int[world[0].length][world.length];
         }
-        bruteExplore();
 
-            speed = 1.4f;
-
-//        if(agentTracker()){
-//
-//        }
-//        else {
-            //createCoverage();
-//        if(!inProximity(35, 35)) {
-//            aStarHeadTo(35, 35);
-//        }
-//            patrol();
-//            createCoverage();
-        //}
+        //createCoverage();
+        if(!inProximity(100, 200)) {
+            aStarHeadTo(100, 200);
+        }
+        //patrol();
         setAudioRadius();
         firstTime = false;
+
     }
 
     public void createCoverage(){
         int currentX = (int)((this.getX()+5)/10);
         int currentY = (int)((this.getY()+5)/10);
-        for (int j = -9; j < 10; j++) {
-            for (int k = -9; k < 10; k++) {
+        for (int j = -4; j < 5; j++) {
+            for (int k = -4; k < 5; k++) {
                 if(currentX + k < coverageWorld[0].length && currentX + k >= 0 && currentY + j < coverageWorld.length && currentY + j >= 0){
                     coverageWorld[currentX+k][currentY+j] = 1;
                 }
@@ -87,7 +63,6 @@ public class Guard extends Agent {
             }
         }
         System.out.println(amount);
-        System.out.println(System.currentTimeMillis() - startTime);
     }
 
     public void patrol(){
@@ -98,12 +73,10 @@ public class Guard extends Agent {
                 }
             }
             else{
-                //i = (int)((waypoints.size()-1)*Math.random());
-                i++;
+                i = (int)((waypoints.size()-1)*Math.random());
             }
         }
         catch (IndexOutOfBoundsException exception){
-            System.out.println("for some reason, out of bounds");
             move();
         }
 //        else if(i<waypoints.size() - 1){
@@ -133,17 +106,6 @@ public class Guard extends Agent {
         }
 //        placeWaypoint(10,5);
 //        placeWaypoint(50,70);
-    }
-
-    public void distributedWaypoints(){
-        for (int j = 2; j < world.length-2; j++) {
-            for (int k = 2; k < world[0].length-2; k++) {
-                if(j%10==0 && k%10==0 && world[k][j] != 9){
-                    System.out.println("place waypoint" + k + " " + j);
-                    placeWaypoint(k,j);
-                }
-            }
-        }
     }
 
     public void trafficWaypoints() {
@@ -179,7 +141,7 @@ public class Guard extends Agent {
         int[][] mostTravelled = find10Highest(checkingMap, 10);
         for (int j = 0; j < mostTravelled.length; j++) {
 //            if(Math.random()*1<0.3333) {
-                placeWaypoint(mostTravelled[j][0], mostTravelled[j][1]);
+            placeWaypoint(mostTravelled[j][0], mostTravelled[j][1]);
 //            }
         }
         double time2 = System.currentTimeMillis();
@@ -275,387 +237,10 @@ public class Guard extends Agent {
         int[] coords = {currentAreaPosX, currentAreaPosY};
         return coords;
     }
-
-    @Override
-    public void setAgentList(ArrayList aList){
-        this.agentList = aList;
-    }
-
-    public boolean agentTracker(){
-        if(agentList!=null){
-            for (int j = 0; j < agentList.size(); j++) {
-                System.out.println("Agents:");
-                System.out.println(((Agent)(agentList.get(j))).getX() + "      " + ((Agent)(agentList.get(j))).getY());
-                if(radiusDetection(this, ((Agent)(agentList.get(j)))) && (agentList.get(j)) instanceof Intruder){
-                    System.out.println("found agent");
-
-
-                    if(directComms) {
-                        alertMessage(((Agent) (agentList.get(j))).getX(), ((Agent) (agentList.get(j))).getY());
-
-
-                        if (probeLine(radio.getPos()[0], radio.getPos()[1])) {
-                            swerveTo(radio.getPos()[0], radio.getPos()[1]);
-                        } else {
-                            aStarHeadTo(radio.getPos()[0], radio.getPos()[1]);
-                        }
-                    }
-
-                    else if(!directComms){
-                        GuardTrail trailNode = new GuardTrail(this, this.getX(), this.getY());
-
-                        trailList.add(trailNode);
-
-                        if (probeLine(((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY())) {
-                            swerveTo(((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY());
-                        } else {
-                            aStarHeadTo(((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY());
-                        }
-                    }
-                    if(Math.abs(((Agent)(agentList.get(j))).getX()-this.getX()) <1 && Math.abs(((Agent)(agentList.get(j))).getY()-this.getY()) < 1){
-                        System.out.println("Agent caught");
-                        //System.exit(-1);
-                    }
-                    return true;
-                }
-            }
-        }
-        if(directComms) {
-            if (radio.getAlert()) {
-                System.out.println("head to reported position");
-                if (probeLine(radio.getPos()[0], radio.getPos()[1])) {
-                    swerveTo(radio.getPos()[0], radio.getPos()[1]);
-                } else {
-                    aStarHeadTo(radio.getPos()[0], radio.getPos()[1]);
-                }
-                return true;
-            }
-        }
-        else if(!directComms){
-            if(lookForTrail()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public void alertMessage(float xpos, float ypos){
-        float[] xyPos = {xpos, ypos};
-
-        radio.setPos(xyPos);
-        radio.setAlert(true);
-    }
-
-
-
-    public void inTower(){
-        speed = 0;
-    }
-
-    public boolean lookForTrail(){
-        GuardTrail maxNumber = new GuardTrail(this, -1000, -1000);
-        maxNumber.setNumber(-1);
-        for (int j = 0; j < trailList.size(); j++) {
-            if(Math.abs(trailList.get(j).getX()-this.getX()) <100 && Math.abs(trailList.get(j).getY()-this.getY()) <100 && trailList.get(j).isExplored() == false && trailList.get(j).getTheGuard()!=this){
-                System.out.println("Found trail");
-                if(trailList.get(j).getNumber() > maxNumber.getNumber()){
-                    maxNumber = trailList.get(j);
-                    trailList.get(j).setExplored();
-                }
-            }
-        }
-        if(maxNumber.getX()>-1) {
-            if (probeLine(maxNumber.getX(), maxNumber.getY())) {
-                swerveTo(maxNumber.getX(), maxNumber.getY());
-                return true;
-            } else {
-                aStarHeadTo(maxNumber.getX(), maxNumber.getY());
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void enterTower(){
-        double nowTime = System.currentTimeMillis();
-
-        if(timeStart == 0){
-            timeStart = nowTime;
-        }
-        else if(nowTime-timeStart>3000) {
-            isInTower = true;
-            timeStart = 0;
-        }
-    }
-
-    public void exitTower(){
-        double nowTime = System.currentTimeMillis();
-
-        if(timeStart == 0){
-            timeStart = nowTime;
-        }
-        else if(nowTime-timeStart>3000) {
-            isInTower = false;
-            timeStart = 0;
-        }
-    }
-
-    public boolean loopExplore() {
-
-        int posX = Math.round(this.getX() / 10);
-        int posY = Math.round(this.getY() / 10);
-
-
-//        int h = 3;
-//
-//        int tempI = posX - h;
-//        if (tempI < 1)
-            int tempI = 0;
-//
-//        int rangeI = posX + h;
-//        if (rangeI > 78)
-            int rangeI = 79;
-
-//        int tempJ = posY - h;
-//        if (tempJ < 1)
-            int tempJ = 0;
-
-//        int rangeJ = posY + h;
-//        if (rangeJ > 78)
-            int rangeJ = 79;
-
-
-        for (int i = tempI; i < rangeI; i++) {
-            for (int j = tempJ; j < rangeJ; j++) {
-
-
-                //System.out.println(h);
-                if (coverageWorld[j][i] == 0) {
-
-                    int k = i * 10;
-                    if (k <= 10)
-                        k = 11;
-                    System.out.println("k " + k);
-                    int l = j * 10;
-                    if (l <= 10)
-                        l = 11;
-                    System.out.println("l " + l);
-                    if(world[j][i] != 9) {
-                        if (!inProximity(l, k)) {
-                            aStarHeadTo(l, k);
-
-
-                        }
-
-                            System.out.println("make 1");
-                        if(inProximity(l, k)) {
-                            coverageWorld[j][i] = 1;
-                        }
-                        int count = 0;
-
-                        for (int m = 0; m < world.length; m++) {
-                            for (int n = 0; n < world[0].length; n++) {
-                                System.out.print(agentsworld[n][m] + " ");
-                            }
-                            System.out.println();
-                        }
-
-                        System.out.println("____________________________________________");
-                        for (int m = 0; m < world[0].length; m++) {
-
-                                for (int n = 0; n < world.length; n++) {
-                                    if((m>0 && m<79) || (n>0 && n<79)){
-                                        count++;
-                                        if(coverageWorld[n][m] == 1 || world[n][m] == 9){
-                                            count--;
-                                        }
-                                    }
-                                    else{
-                                        coverageWorld[n][m] = 1;
-                                    }
-
-
-                                    float[] target = {10*n, 10*m};
-                                    float[] currentPos = {this.getX(), this.getY()};
-                                    float[][] visionCorners = vision();
-                                    float[] b = {visionCorners[1][0], visionCorners[1][1]};
-                                    float[] c = {visionCorners[2][0], visionCorners[2][1]};
-
-                                    if(isInVisionField(target, currentPos, c, b)){
-                                        coverageWorld[n][m] = 1;
-                                    }
-                                    System.out.print(coverageWorld[n][m] + " ");
-                                }
-                                System.out.println();
-
-
-
-
-                        }
-                        System.out.println("count " + count);
-                        if(count <=1) {
-                            System.out.println("It's done >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ;)");
-                            agentsworld = fillInBlanks(agentsworld);
-                            return true;
-                        }
-                        else{
-                            return false;
-                        }
-                    }
-                    else{
-
-                        System.out.println("wall");
-                        coverageWorld[j][i] = 1;
-                    }
-                } else {
-                    //h++;
-                }
-            }
-        }
-
-        return false;
-    }
-
-
-
-
-    public boolean bruteExplore() {
-
-        int posX = Math.round(this.getX() / 10);
-        int posY = Math.round(this.getY() / 10);
-
-        double distance = 30000;
-        int minDX = 69;
-        int minDY = 69;
-
-
-//        int h = 3;
-//
-//        int tempI = posX - h;
-//        if (tempI < 1)
-        int tempI = 0;
-//
-//        int rangeI = posX + h;
-//        if (rangeI > 78)
-        int rangeI = 79;
-
-//        int tempJ = posY - h;
-//        if (tempJ < 1)
-        int tempJ = 0;
-
-//        int rangeJ = posY + h;
-//        if (rangeJ > 78)
-        int rangeJ = 79;
-        int count = 0;
-
-        for (int g = tempI; g < rangeI; g++) {
-            for (int j = tempJ; j < rangeJ; j++) {
-
-                float tempX = Math.abs(j-(this.getX()/10));
-                float tempY = Math.abs(g-(this.getY()/10));
-
-                double tempDistance = Math.sqrt((tempX*tempX)+(tempY*tempY));
-                System.out.print(tempDistance + " ");
-
-                if((j>0 && j<79)&&(g>0 && j<79)){
-                if (tempDistance<distance && coverageWorld[j][g]==0 && world[j][g] != 9){
-                    distance = tempDistance;
-                    //System.out.println("I liike jeff");
-                    minDX=j;
-                    minDY=g;
-
-                }
-                }
-
-                if(agentsworld[j][g] == 0){
-                    count++;
-                }
-                //System.out.println(h);
-                //if (coverageWorld[j][i] == 0) {
-
-                    int k = g * 10;
-                    if (k <= 10)
-                        k = 11;
-                    //System.out.println("k " + k);
-                    int l = j * 10;
-                    if (l <= 10)
-                        l = 11;
-                    //System.out.println("l " + l);
-
-
-
-                        //for (int m = 0; m < world.length; m++) {
-                            //for (int n = 0; n < world[0].length; n++) {
-                              //  System.out.print(agentsworld[n][m] + " ");
-                            //}
-                            //System.out.println();
-                        //}
-
-                        //System.out.println("________________");
-
-
-
-
-                                float[] target = {10*j, 10*g};
-                                float[] currentPos = {this.getX(), this.getY()};
-                                float[][] visionCorners = vision();
-                                float[] b = {visionCorners[1][0], visionCorners[1][1]};
-                                float[] c = {visionCorners[2][0], visionCorners[2][1]};
-
-                                if(isInVisionField(target, currentPos, c, b)) {
-                                    coverageWorld[j][g] = 1;
-                                }
-
-
-
-
-
-                //} else {
-                    //h++;
-                //}
-            }
-            System.out.println();
-        }
-        System.out.println("count " + count);
-        if(count <=1) {
-            System.out.println("It's done >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ;)");
-            agentsworld = fillInBlanks(agentsworld);
-            return true;
-        }
-        else{
-        }
-        if (!inProximity(minDX*10, minDY*10)) {
-            System.out.println("Current destination: " + minDX + " , " + minDY + "    " + distance);
-            if(probeLine(minDX*10, minDY*10)){
-                swerveTo(minDX*10, minDY*10);
-            }
-            else {
-                aStarHeadTo(minDX * 10, minDY * 10);
-            }
-
-        }
-
-        System.out.println("make 1");
-
-        if(inProximity(minDX*10, minDY*10)) {
-            coverageWorld[minDX][minDY] = 1;
-        }
-        return false;
-    }
-
-    public int[][] fillInBlanks(int[][] givenWorld){
-        for (int j = 0; j < givenWorld[0].length; j++) {
-            for (int k = 0; k < givenWorld.length; k++) {
-                if(givenWorld[k][j] == 0){
-                    givenWorld[k][j] = 9;
-                }
-                System.out.print(givenWorld[k][j]);
-            }
-            System.out.println();
-        }
-
-        return givenWorld;
-    }
+    //  public void plan(){
+    //    setAudioRadius();
+    //   if(world[(int)x/10][(int)y/10] == 1) speed = 0;
+    // else move();
+    //}
 
 }
