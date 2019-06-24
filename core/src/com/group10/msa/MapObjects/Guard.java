@@ -15,6 +15,8 @@ public class Guard extends Agent {
     private int[][] coverageWorld = new int[80][80];
     private ArrayList agentList;
     private boolean explored = false;
+    private Agent investigating = null;
+    private boolean investigated = false;
     private Radio radio = new Radio();
     private double timeStart = 0;
     private boolean isInTower = false;
@@ -49,11 +51,14 @@ public class Guard extends Agent {
         if(firstTime){
              //coverageWorld = new int[world[0].length][world.length];
         }
-        bruteExplore();
+        //bruteExplore();
 
             speed = 1.4f;
 
-//        if(agentTracker()){
+        if(agentTracker()){
+
+        }
+//        else if(agentHearing()){
 //
 //        }
 //        else {
@@ -61,7 +66,9 @@ public class Guard extends Agent {
 //        if(!inProximity(35, 35)) {
 //            aStarHeadTo(35, 35);
 //        }
-//            patrol();
+        else{
+            patrol();
+        }
 //            createCoverage();
         //}
         setAudioRadius();
@@ -286,7 +293,13 @@ public class Guard extends Agent {
             for (int j = 0; j < agentList.size(); j++) {
                 System.out.println("Agents:");
                 System.out.println(((Agent)(agentList.get(j))).getX() + "      " + ((Agent)(agentList.get(j))).getY());
-                if(radiusDetection(this, ((Agent)(agentList.get(j)))) && (agentList.get(j)) instanceof Intruder){
+                //if(radiusDetection(this, ((Agent)(agentList.get(j)))) && (agentList.get(j)) instanceof Intruder){
+                float[] point = {((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY()};
+                float[] a = {this.getX(), this.getY()};
+                float[][] vision = vision();
+                float[] b = {vision[1][0], vision[1][1]};
+                float[] c = {vision[2][0], vision[2][1]};
+                if(isInVisionField(point, a, c, b) && (agentList.get(j)) instanceof Intruder)  {
                     System.out.println("found agent");
 
 
@@ -317,6 +330,9 @@ public class Guard extends Agent {
                         //System.exit(-1);
                     }
                     return true;
+                }
+                else if(investigating != null){
+
                 }
             }
         }
@@ -376,6 +392,23 @@ public class Guard extends Agent {
         }
         return false;
     }
+
+//    public boolean agentHearing(){
+//        for (int j = 0; j < agentList.size(); j++) {
+//            if(radiusDetection(this, ((Agent)(agentList.get(j))))){
+//                if(probeLine(((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY())){
+//                    swerveTo(((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY());
+//                }
+//                else{
+//                    aStarHeadTo(((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY());
+//                }
+//                investigating = ((Agent)(agentList.get(j)));
+//                return true;
+//            }
+//        }
+//        investigating = null;
+//        return false;
+//    }
 
     public void enterTower(){
         double nowTime = System.currentTimeMillis();
@@ -657,5 +690,8 @@ public class Guard extends Agent {
 
         return givenWorld;
     }
+
+
+
 
 }

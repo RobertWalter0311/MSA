@@ -8,9 +8,10 @@ public class Intruder extends Agent {
     @Override
     public void plan() {
 
+        speed = 1.4f;
 
-        if(!inProximity(340, 600)) {
-            aStarHeadTo(340, 600);
+        if(!inProximity(400, 100)) {
+            aStarHeadTo(400, 100);
         }
         setAudioRadius();
 

@@ -63,6 +63,7 @@ public class Agent {
         int tempy = (int) (y + 5 + (metresToCoord(speed) * Math.sin(direction)));
         tempx *= 0.1;
         tempy *= 0.1;
+        System.out.println(this.getClass() + " moving");
 
 //        if(world[tempx][tempy] == 9) {
 //            System.out.println("TUUUURRRRN" + direction);
@@ -90,9 +91,9 @@ public class Agent {
             if(speed == 1.4f) {
                 turnSpeed = (float) (Math.PI / 60);
             }
-            else if(speed > 1.4f){
-                turnSpeed = (float) ((Math.PI / 60)/18);
-            }
+//            else if(speed > 1.4f){
+//                turnSpeed = (float) ((Math.PI / 60)/18);
+//            }
 //            if(speed <= 1.4f){
 //                turnSpeed = (float)(Math.PI / 60);
 //            }

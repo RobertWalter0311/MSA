@@ -145,7 +145,7 @@ public class GameScreen implements Screen{
 			Guard agent2 = new Guard(15,250, (float)(Math.PI/2), world);
             Guard agent3 = new Guard(600,250, (float)(Math.PI/2), world);
 
-            //agents.add(agent1);
+            agents.add(agent1);
 			agents.add(agent2);
             //agents.add(agent3);
 			agent1.speed = (1.4f);
