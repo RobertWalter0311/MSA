@@ -90,9 +90,9 @@ public class Agent {
             if(speed == 1.4f) {
                 turnSpeed = (float) (Math.PI / 60);
             }
-            else if(speed > 1.4f){
-                turnSpeed = (float) ((Math.PI / 60)/18);
-            }
+//            else if(speed > 1.4f){
+//                turnSpeed = (float) ((Math.PI / 60)/18);
+//            }
 //            if(speed <= 1.4f){
 //                turnSpeed = (float)(Math.PI / 60);
 //            }
@@ -565,7 +565,7 @@ public class Agent {
                         pathPlace = 0;
 
                         //The Movement, telling the agent to move to the next grid square in the path
-                        headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
+                        swerveTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
 
 //                        directLine(currentPath);
 //                        headTo(directCoords[0], directCoords[1]);
@@ -625,11 +625,11 @@ public class Agent {
 
         //if the agent is less than a grid square away from the destination, then head straight to it.
         if(Math.abs(this.getX()-objx)<10 && Math.abs(this.getY()-objy)<10){
-            headTo(objx,objy);
+            swerveTo(objx,objy);
         }
         else {
             //Some more bug evasion here
-            headTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
+            swerveTo(((Node) (currentPath.get(pathPlace))).getXcoords() * 10, ((Node) (currentPath.get(pathPlace))).getYcoords() * 10);
             //directLine(currentPath);
         }
         return true;
@@ -1118,9 +1118,10 @@ public class Agent {
 
     public void setAudioRadius(){
         if(speed < 0.5) audioRadius = 20;
-        else if (speed < 1) audioRadius = 60;
+        //else if (speed < 1) audioRadius = 60;
         else if (speed < 2) audioRadius  = 100;
-        else audioRadius = 200;
+        //else audioRadius = 200;
+
     }
     public float normalNoiseDetection(float dx,float dy){
         float direc = getAngle(dx,dy);

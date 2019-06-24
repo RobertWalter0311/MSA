@@ -49,21 +49,21 @@ public class Guard extends Agent {
         if(firstTime){
              //coverageWorld = new int[world[0].length][world.length];
         }
-        bruteExplore();
+        //bruteExplore();
 
             speed = 1.4f;
 
-//        if(agentTracker()){
+        if(agentTracker()){
 //
-//        }
-//        else {
+        }
+        else {
             //createCoverage();
 //        if(!inProximity(35, 35)) {
 //            aStarHeadTo(35, 35);
 //        }
-//            patrol();
+            patrol();
 //            createCoverage();
-        //}
+        }
         setAudioRadius();
         firstTime = false;
     }
@@ -286,7 +286,15 @@ public class Guard extends Agent {
             for (int j = 0; j < agentList.size(); j++) {
                 System.out.println("Agents:");
                 System.out.println(((Agent)(agentList.get(j))).getX() + "      " + ((Agent)(agentList.get(j))).getY());
-                if(radiusDetection(this, ((Agent)(agentList.get(j)))) && (agentList.get(j)) instanceof Intruder){
+                //if(radiusDetection(this, ((Agent)(agentList.get(j)))) && (agentList.get(j)) instanceof Intruder){
+
+                float[][] arcCoords = vision();
+
+                float[] point = {((Agent)(agentList.get(j))).getX(), ((Agent)(agentList.get(j))).getY()};
+                float[] a = {this.getX(), this.getY()};
+                float[] b = {arcCoords[1][0], arcCoords[1][1]};
+                float[] c = {arcCoords[2][0], arcCoords[2][1]};
+                if(isInVisionField(point, a, c, b) && agentList.get(j) instanceof Intruder){
                     System.out.println("found agent");
 
 
