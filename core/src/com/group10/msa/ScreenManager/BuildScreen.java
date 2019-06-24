@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -38,6 +39,8 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
     ShapeRenderer render;
     Stage stage;
     Skin skin;
+
+    public float rotationSpeed;
 
     MapType terrainSelect = MapType.Target;
 
@@ -164,10 +167,18 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
 
 
     public void render(float delta){
+        handleInput();
+        cam.update();
         Gdx.gl.glClearColor(1,1,1,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        game.batch.setProjectionMatrix(cam.combined);
+        if (Gdx.input.isTouched()) {
+            game.setScreen(new MenuScreen(game));
+            dispose();
+        }
         render.setProjectionMatrix(cam.combined);
+
         batch.setProjectionMatrix(cam.combined);
         batch.begin();
         batch.draw(BuildAssets.gridB,0,8,1280,1280);
@@ -216,6 +227,42 @@ public class BuildScreen extends ApplicationAdapter implements InputProcessor,Sc
         stage.act();
         stage.draw();
 
+    }
+
+    private void handleInput() {
+        //key ordering is botched for now
+        if (Gdx.input.isKeyPressed(Input.Keys.Z)) {
+            cam.zoom += 0.02;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.X)) {
+            cam.zoom -= 0.02;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            cam.translate(-3, 0, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+            cam.translate(3, 0, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            cam.translate(0, -3, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            cam.translate(0, 3, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+            cam.rotate(-rotationSpeed, 0, 0, 1);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+            cam.rotate(rotationSpeed, 0, 0, 1);
+        }
+
+        //cam.zoom = MathUtils.clamp(cam.zoom, 0.1f, 800 / cam.viewportWidth);
+
+        //float effectiveViewportWidth = cam.viewportWidth * cam.zoom;
+        //float effectiveViewportHeight = cam.viewportHeight * cam.zoom;
+
+        //  camera.position.x = MathUtils.clamp(camera.position.x, effectiveViewportWidth / 2f, 800 - effectiveViewportWidth);
+        // camera.position.y = MathUtils.clamp(camera.position.y, effectiveViewportHeight / 2f, 480 - effectiveViewportHeight);
     }
 
     @Override
