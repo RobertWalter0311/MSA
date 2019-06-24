@@ -51,7 +51,7 @@ public class GameScreen implements Screen{
 	private Texture texture;
 	private BitmapFont font;
 	private SpriteBatch batch;
-    private float rotationSpeed;
+    public float rotationSpeed;
 	//private Sprite sprite;
 	public int[][] world;
 	private ShapeRenderer shapeRenderer = new ShapeRenderer();
