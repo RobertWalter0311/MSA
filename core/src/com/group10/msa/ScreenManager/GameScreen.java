@@ -148,7 +148,8 @@ public class GameScreen implements Screen{
             agents.add(agent2);
             agent1.speed = (1.4f);
             agent2.speed = (1.4f);
-            Vector2 v1 = new Vector2(300,600);
+            //agent3.speed = (1.4f);
+			Vector2 v1 = new Vector2(300,600);
             Vector2 v2 = new Vector2(400,400);
             target1 = new TargetArea(Target, v1);
             target2 = new TargetArea(Target, v2);

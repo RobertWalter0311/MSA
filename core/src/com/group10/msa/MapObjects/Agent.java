@@ -5,9 +5,12 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.group10.msa.ScreenManager.GameScreen;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.PriorityQueue;
 
 public class Agent {
 
@@ -27,10 +30,14 @@ public class Agent {
     public float audioRadius = 20;
     private float xDir = 0;
     private float yDir = 0;
+    float coords[] = {500, 500};
+    int directState = 0;
+    ArrayList xCoordList = new ArrayList();
+    ArrayList yCoordList = new ArrayList();
     private ArrayList currentPath;
     int pathPlace = 0;
     public ArrayList<Agent> agentList;
-
+   //private ArrayList agentListKit;
 
 
     public int[][] agentsworld = new int[80][80];
@@ -342,12 +349,21 @@ public class Agent {
     //(and then you can change destination or whatever in the else statement)
     //The aStarHeadTo method is a boolean so it can return false if the destination is in a wall or can't be reached.
     public boolean aStarHeadTo(float objx, float objy){
+        if(probeLine(objx,objy)){
+            headTo(objx,objy);
+            return true;
+        }
         System.out.println("Start path-finding>>>>>");
         boolean changeTile = false;
         boolean changeDestination = false;
+        float[] directCoords = new float[2];
+
+        //When destination changes this happens
         if(objx != storeObjX || objy != storeObjY){
             System.out.println("New destination" + objx + "  " + objy);
+            //The path to the last destination is thrown out
             currentPath = null;
+            //New coordinates are taken
             storeObjX = objx;
             storeObjY = objy;
             changeDestination = true;
@@ -594,6 +610,15 @@ public class Agent {
 
 
     }
+    public void swerveTo(float xPos, float yPos){
+        if(Math.abs(direction - getAngle(xPos,yPos))>0){
+            turn(getAngle(xPos,yPos));
+        }
+        if(Math.abs(direction - getAngle(xPos,yPos))<Math.PI/8){
+            move();
+        }
+    }
+
     public void swerveTo(int xPos, int yPos){
 
         Vector2 v1 = new Vector2(xPos,yPos);
@@ -606,6 +631,7 @@ public class Agent {
         if(Math.abs(x-xPos) < 1&& Math.abs(y-yPos) <1 ) {
             speed = 0;
         }
+
 
 
     }
@@ -745,7 +771,7 @@ public class Agent {
         ac[1] = ac[1]/temp;
 
         float angleAB = (float)Math.acos((a_point[0]*ab[0])+(a_point[1]*ab[1]));
-        float angleAC =  (float)Math.acos((a_point[0]*ac[0])+(a_point[1]*ac[1]));
+       float angleAC =  (float)Math.acos((a_point[0]*ac[0])+(a_point[1]*ac[1]));
         if(angleAB >= 0 && angleAB <= (Math.PI/4) && angleAC >= 0 && angleAC <= (Math.PI/4)){
             return true;}
         return false;
@@ -758,6 +784,28 @@ public class Agent {
         else audioRadius = 200;
     }
     public float normalNoiseDetection(float dx,float dy){
+        float direc = getAngle(dx,dy);
+        float probab = (float) Math.random();
+        if(probab < 0.6827 ){
+            float rando = (float) (-10 + (Math.random() * ((10 - (-10)) + 1)));
+            //System.out.println("RESULT " +(direc +(float)(Math.toRadians(rando))));
+            return direc +(float)(Math.toRadians(rando));
+        }
+        else if (probab < 0.9545){
+            float rando = (float) (-20+ (Math.random() * ((20 - (-20)) + 1)));
+            return direction +(float)(Math.toRadians(rando));
+        }
+        else if (probab < 0.9973){
+            float rando = (float) (-30 + (Math.random() * ((30 - (-30)) + 1)));
+            return direc +(float)(Math.toRadians(rando));
+        }
+        else{
+            float rando = (float) (-40 + (Math.random() * ((40 - (-40)) + 1)));
+            return direc +(float)(Math.toRadians(rando));
+        }
+    }
+
+    public float moveNoiseDetection(float dx,float dy){
         float direc = getAngle(dx,dy);
         float probab = (float) Math.random();
         if(probab < 0.6827 ){
@@ -834,9 +882,60 @@ public class Agent {
 
         if(temp <= a2.audioRadius) {
             return true;
-        }
-        else return false;
+        } else return false;
 
     }
 
+    public boolean explore() {
+
+        int posX = Math.round(this.getX() / 10);
+        int posY = Math.round(this.getY() / 10);
+
+
+        int h = 3;
+
+        int tempI = posX - h;
+        if (tempI < 1)
+            tempI = 1;
+
+        int rangeI = posX + h;
+        if (rangeI > 78)
+            rangeI = 78;
+
+        int tempJ = posY - h;
+        if (tempJ < 1)
+            tempJ = 1;
+
+        int rangeJ = posY + h;
+        if (rangeJ > 78)
+            rangeJ = 78;
+
+
+        for (int i = tempI; i < rangeI; i++) {
+            for (int j = tempJ; j < rangeJ; j++) {
+
+
+                System.out.println(h);
+                if (agentsworld[i][j] == 0) {
+
+                    int k = i * 10;
+                    if (k <= 10)
+                        k = 11;
+                    System.out.println("k " + k);
+                    int l = j * 10;
+                    if (l <= 10)
+                        l = 11;
+                    System.out.println("l " + l);
+                    while (!inProximity(k, l)) {
+                        headTo(k, l);
+
+                    }
+                } else {
+                    h++;
+                }
+            }
+
+        }
+        return false;
+    }
 }
